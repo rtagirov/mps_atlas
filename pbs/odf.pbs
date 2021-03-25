@@ -1,0 +1,29 @@
+#!/bin/bash
+#PBS -N odf_asplund
+#PBS -l walltime=01:50:00 
+#PBS -lselect=1:ncpus=4:mem=1GB
+
+# load module(s)
+module load intel-suite
+module load mpi/intel-2019
+module load netcdf/4.0.1-mcmodel-medium
+
+# number of processes
+#NP=$(cat $PBS_NODEFILE | wc -l)
+
+base=/rds/general/user/rtagirov/ephemeral/runs/atlas
+
+dir=$base/odf_asplund
+
+tmp=$TMPDIR
+
+cp -r $dir/* -t $tmp
+
+# launch the application
+#mpiexec -np ${NP} ./$tmp/run-mpsa.x > atlas.log
+mpiexec ./$tmp/run-mpsa.x > atlas.log
+
+rsync -rptgoDq $tmp/ $dir/
+
+# cleanup
+module purge
