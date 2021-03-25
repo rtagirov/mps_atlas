@@ -1,0 +1,10 @@
+!*.... 
+      common / ifequa / code, equil, idequa, ifequa, kcomps, locj 
+      common / ifequa1 / nequa, nloc, nummol
+
+      integer           idequa(maxmeq), ifequa(101), kcomps(maxloc) 
+      integer                   locj(maxmol + 1), nequa, nloc, nummol
+      double precision  code(maxmol), equil(7, maxmol)
+!*
+!***************** E N D  O F   C O M M O N   I F E Q U A *****************
+!*

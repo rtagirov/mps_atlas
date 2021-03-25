@@ -1,0 +1,11 @@
+!*.... 
+!*.... 1993 JUL - ADDED VARIABLE ifmasks
+!*
+      common /logicbl/ recalxne
+      common /ifblkk/ ifcorr, ifmasks, ifscat, ifmol, ifpres, ifsurf
+      integer         ifsurf
+      logical         ifcorr, ifmasks, ifmol, ifpres, ifscat 
+      logical         recalxne
+!*
+!***************** E N D  O F   C O M M O N   I F B L K K *****************
+!*

@@ -1,0 +1,7 @@
+!*.... 
+      common /ionsbl/  xnfh, xnfhe, xnfph, xnfphe
+      double precision xnfh(maxd, 2), xnfhe(maxd, 3) 
+      double precision xnfph(maxd,2), xnfphe(maxd,3)
+!*
+!***************** E N D  O F   C O M M O N   I O N S B L *****************
+!*

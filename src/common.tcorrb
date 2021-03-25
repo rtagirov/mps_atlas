@@ -1,0 +1,8 @@
+!*.... 
+      common / tcorrb/ ddtau,dtaunu,eddfac,fh,kappa,ratmab,ratmop 
+
+      double precision  ddtau(maxd), dtaunu(maxd), eddfac(maxd), fh 
+      double precision  kappa(maxd), ratmab(maxd), ratmop(maxd)
+!*
+!***************** E N D  O F   C O M M O N   T C O R R B *****************
+!

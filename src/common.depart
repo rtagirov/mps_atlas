@@ -1,0 +1,15 @@
+!.... 
+      common / depart / bal1, bal2, bb1,  bc1, bc2,  bca1, bca2, bfe1
+      common / depart1 / bhe1, bhe2, bhyd, bk1, bmg1, bmg2, bmin, bna1
+      common / depart2 / bo1,  bo2, bsi1, bsi2, nlteon
+      double precision  bal1(maxd, 9),  bal2(maxd, 1),  bb1(maxd, 7) 
+      double precision  bc1(maxd, 14),  bc2(maxd, 6),   bca1(maxd, 8) 
+      double precision  bca2(maxd, 8),  bfe1(maxd, 15), bhe1(maxd, 29) 
+      double precision  bhe2(maxd, 6),  bhyd(maxd, 8),  bk1(maxd, 8) 
+      double precision  bmg1(maxd, 11), bmg2(maxd, 6),  bmin(maxd)
+      double precision  bna1(maxd, 8),  bo1(maxd, 13),  bo2(maxd, 4)
+      double precision  bsi1(maxd, 11), bsi2(maxd, 10) 
+      logical           nlteon
+!*
+!***************** E N D  O F   C O M M O N   D E P A R T *****************
+!*

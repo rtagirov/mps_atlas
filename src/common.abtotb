@@ -1,0 +1,6 @@
+!.... 
+      common / abtotb / abtot, alpha, dkappa
+      double precision  abtot(maxd), alpha(maxd), dkappa(maxd)
+!
+!***************** E N D  O F   C O M M O N   A B T O T B *****************
+!

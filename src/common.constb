@@ -1,0 +1,29 @@
+!*
+!*.... THE VARIOUS FUNDAMENTAL CONSTANTS
+!*.... VALUES TAKEN FROM K. R. LANG, ASTROPHYSICAL DATA
+!*
+!*.... 1995 OCT - REORGANIZED TO REMOVE CONSTANTS THAT INVOLVED DIVISION 
+!*     OF CONSTANTS
+!*
+      double precision  amu, c_cm, c_nm, fourpi, h, hc, he2lim 
+      double precision  he3lim, hydip, k, k_ev, pi, ryd, sige 
+      double precision  sigma, tenlog
+      parameter ( amu    = 1.6605402d-24)  
+      parameter ( c_cm   = 2.99792458d10)  
+      parameter ( c_nm   = c_cm * 1.0d7 )  
+      parameter ( h      = 6.6260755d-27)   
+      parameter ( hc     = h * c_cm ) 
+      parameter ( he2lim = 527490.06d0 )  
+      parameter ( he3lim = 588451.59d0 )  
+      parameter ( hydip  = 13.595d0 )  
+      parameter ( k      = 1.380658d-16)   
+      parameter ( k_ev   = 8.61708d-5 )  
+      parameter ( pi     = 3.1415926536d0 )  
+      parameter ( fourpi = 4.0d0 * pi )  
+      parameter ( ryd    = 3.28805d15 )  
+      parameter ( sige   = 6.65246163d-25 )  
+      parameter ( sigma  = 5.67051d-5 )  
+      parameter ( tenlog = 2.30258509299405d0)
+!*
+!***************** E N D  O F   C O M M O N   C O N S T B *****************
+!*

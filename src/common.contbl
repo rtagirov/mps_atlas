@@ -1,0 +1,10 @@
+!.... 
+      common /contbl/  abtotc, alphac, dtaunuc, hnuc, jnuc  
+      common /contbl1/   residc, snuc, taunuc
+!
+      double precision abtotc(maxd), alphac(maxd), dtaunuc(maxd) 
+      double precision hnuc(maxd), jnuc(maxd), residc(maxd) 
+      double precision snuc(maxd), taunuc(maxd)
+!
+!***************** E N D  O F   C O M M O N   C O N T B L *****************
+!

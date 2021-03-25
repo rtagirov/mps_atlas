@@ -1,0 +1,5 @@
+!*.... 
+      common /xabund/  wtmole, xabund
+      double precision wtmole, xabund(99)
+!*
+!***************** E N D  O F   C O M M O N   X A B U N D *****************

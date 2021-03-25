@@ -1,0 +1,18 @@
+!*
+!*.... 1996 Apr - CHANGED maxmol, maxmeq, maxloc TO CONFORM TO
+!
+!*                BOB'S VALUES IN XNFPELSYN DATED 3Jan95
+!*
+!*.... maxd   = maximum number of depths in the atmosphere
+!*.... maxmeq = maximum number of molecular equations
+!*.... maxloc = maximum number of molecular components
+!*.... maxmol = maximum number of molecules
+!*.... maxmu  = maximum number of angles for the radiation field
+!*.... maxnu  = the maximum number of frequencies
+!*
+      integer maxd, maxloc, maxmeq, maxmol, maxmu, maxnu
+      parameter (maxd   = 360, maxloc = 600, maxmeq = 30)
+      parameter ( maxmol = 200, maxmu  = 35, maxnu  = 1563)
+!*
+!********************* E N D  O F   S I Z E B L O C K *********************
+!*

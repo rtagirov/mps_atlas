@@ -1,0 +1,9 @@
+!*....
+!*.... 1994 JAN - MODIFIED TO ADD jmins
+!*.... 
+      common / taushj / hnu, jmins, jnu, snu, taunu
+      double precision  hnu(maxd), jmins(maxd), jnu(maxd), snu(maxd) 
+      double precision  taunu(maxd)
+!*
+!***************** E N D  O F   C O M M O N   T A U S H J *****************
+!*

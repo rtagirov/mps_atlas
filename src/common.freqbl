@@ -1,0 +1,12 @@
+!
+!.... ADDED dbnudt AND waveno
+!.... 1995 JUL - ADDED freqln = log(freq), AND NOW freqlg = log10(freq)
+!
+      common /freqbl/  bnu, dbnudt, dstim, ehvkt, freq, freqlg, freqln
+      common /freqbl1/ stim, waveno
+      double precision bnu(maxd), dbnudt(maxd), dstim(maxd)
+      double precision ehvkt(maxd), freq, freqlg, freqln, stim(maxd) 
+      double precision waveno
+!
+!***************** E N D  O F   C O M M O N   F R E Q B L *****************
+!

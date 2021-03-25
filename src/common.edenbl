@@ -1,0 +1,7 @@
+!*....
+      common / edenbl / edens, ifedns
+      double precision  edens(maxd)
+      logical           ifedns
+!*
+!***************** E N D  O F   C O M M O N   E D E N B L *****************
+!*

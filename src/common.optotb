@@ -1,0 +1,7 @@
+!*.... 
+      common /optotb/  acont, aline, scont, sigmac, sigmal, sline
+      double precision acont(maxd), aline(maxd), scont(maxd) 
+      double precision sigmac(maxd), sigmal(maxd), sline(maxd)
+!*
+!***************** E N D  O F   C O M M O N   O P T O T B *****************
+!*

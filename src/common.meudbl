@@ -1,0 +1,7 @@
+!*.... 
+      common /meudbl/   ddp, eh, ej, ek, eps, pl, ndepth
+      double precision  ddp, eh(maxd), ej(maxd), ek(maxd), eps(maxd), pl
+      integer           ndepth
+!*
+!***************** E N D  O F   C O M M O N   M E U D B L *****************
+!*

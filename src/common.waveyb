@@ -1,0 +1,7 @@
+!.... 
+      common /waveyb/  deltaw, wbegin, ifwave
+      logical          ifwave
+      double precision deltaw, wbegin
+!
+!***************** E N D  O F   C O M M O N   W A V E Y B *****************
+!

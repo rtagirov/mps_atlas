@@ -1,0 +1,7 @@
+!*.... 
+      common /putblk/  put, iput
+      integer          iput
+      double precision put
+!*
+!***************** E N D  O F   C O M M O N   P U T B L K *****************
+!*

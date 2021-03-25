@@ -1,0 +1,9 @@
+!....
+      common /xnfblk/  xnfc,xnffe,xnfmg,xnfn,xnfne,xnfo,xnfs,xnfsi 
+
+      double precision xnfc(maxd,6), xnffe(maxd,5), xnfmg(maxd,6) 
+      double precision xnfn(maxd,6), xnfne(maxd,6), xnfo(maxd,6) 
+      double precision xnfs(maxd,6), xnfsi(maxd,6)
+!*
+!***************** E N D  O F   C O M M O N   X N F B L K *****************
+!*

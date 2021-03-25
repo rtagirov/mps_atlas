@@ -1,0 +1,7 @@
+!*.... 
+      common /elembl/  abund, atmass, elem
+      double precision abund(99), atmass(99)
+      character        elem(99)*2
+!*
+!***************** E N D  O F   C O M M O N   E L E M B L *****************
+!*

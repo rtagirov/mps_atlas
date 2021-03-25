@@ -1,0 +1,7 @@
+!*.... 
+      common /musblk/  angle, surfi, nmu
+      integer          nmu
+      double precision angle(maxmu), surfi(maxmu)
+!*
+!***************** E N D  O F   C O M M O N   M U S B L K *****************
+!*

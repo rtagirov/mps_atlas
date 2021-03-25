@@ -1,0 +1,6 @@
+!*.... 
+      common / parblk / a, b, c
+      double precision  a(maxd,2), b(maxd,2), c(maxd,2)
+!*
+!***************** E N D  O F   C O M M O N   P A R B L K *****************
+!*

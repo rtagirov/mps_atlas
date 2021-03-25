@@ -1,0 +1,6 @@
+!*.... 
+      common /teffbl/  glog, grav, teff
+      double precision glog, grav, teff
+!*
+!***************** E N D  O F   C O M M O N   T E F F B L *****************
+

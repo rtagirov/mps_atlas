@@ -1,0 +1,6 @@
+!*.... 
+      common /fluxbl/  flux, flxdrv, flxerr, flxrad
+      double precision flux, flxdrv(maxd), flxerr(maxd), flxrad(maxd)
+!*
+!***************** E N D  O F   C O M M O N   F L U X B L *****************
+!*

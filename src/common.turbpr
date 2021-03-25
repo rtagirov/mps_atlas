@@ -1,0 +1,11 @@
+!*.... 
+      common /turbpr/  pturb,trbcon,trbfdg,trbpow,trbsnd,vturb,ifturb 
+      logical          ifturb
+      common /vvtab/   ivt, numvt 
+      double precision pturb(maxd), trbcon, trbfdg, trbpow, trbsnd 
+      double precision vturb(maxd)
+      double precision ivt(25)
+      integer          numvt
+!*
+!***************** E N D  O F   C O M M O N   T U R B P R *****************
+!*

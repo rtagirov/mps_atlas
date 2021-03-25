@@ -1,0 +1,10 @@
+!*....
+      common /junkbl/  title, freqid, xscale, wlte 
+      common /junk02/  titleODF
+      character(len=74) title
+      character(len=74) titleODF
+      character(len=6) freqid
+      character(len=4) wlte
+      double precision xscale
+!*
+!***************** E N D  O F   C O M M O N   J U N K B L *****************

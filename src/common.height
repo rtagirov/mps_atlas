@@ -1,0 +1,6 @@
+!*.... 
+      common /height/  height
+      double precision height(maxd)
+!*
+!***************** E N D  O F   C O M M O N   H E I G H T *****************
+

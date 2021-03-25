@@ -1,0 +1,6 @@
+!.... 
+      common /abross/  abross, tauros
+      double precision  abross(maxd), tauros(maxd)
+!
+!***************** E N D  O F   C O M M O N   A B R O S S *****************
+!

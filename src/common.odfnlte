@@ -1,0 +1,9 @@
+!
+      common /odfnlt/  momass,idmol,wledge,cmedge,freqedge
+      common /odfnlt1/  confrq, freqset 
+      double precision momass(60), idmol(60)
+!------------------------------------------------------------------------------
+!----- the dimension might need to be larger later on ...
+      double precision freqedge(377),wledge(377),cmedge(377)
+      double precision confrq(1131), freqset(1131) 
+ 

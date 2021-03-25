@@ -1,0 +1,5 @@
+!
+      common /free/  word,numcol,letcol,last,iffail,maxpow
+      integer numcol, letcol,  last, iffail, maxpow, word(6) 
+
+!------------------- End of common Freebl ---------------------------

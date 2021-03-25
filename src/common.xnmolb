@@ -1,0 +1,7 @@
+!*....
+      common / xnmolb / xnmol
+      common / xnmolc/ xnmolc
+      double precision  xnmol(maxd, maxmol), xnmolc(maxd,maxmol)
+!*
+!***************** E N D  O F   C O M M O N   X N M O L B *****************
+!*

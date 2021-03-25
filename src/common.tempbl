@@ -1,0 +1,8 @@
+!*.... 
+      common /tempbl/  hckt, hkt, t, tk, tkev, tlog, tsave, itemp 
+      integer          itemp
+      double precision hckt(maxd), hkt(maxd), t(maxd), tk(maxd) 
+      double precision tkev(maxd), tlog(maxd), tsave(maxd) 
+!*
+!***************** E N D  O F   C O M M O N   T E M P B L *****************
+

@@ -1,0 +1,3 @@
+./linelists
+./src/*.o
+./src/*.mod

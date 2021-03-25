@@ -1,0 +1,7 @@
+!*.... 
+      common / rhoxbl / rhox, nrhox
+      integer           nrhox
+      double precision  rhox(maxd)
+!*
+!***************** E N D  O F   C O M M O N   R H O X B L *****************
+!*

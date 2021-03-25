@@ -1,0 +1,17 @@
+!*.... 
+      common /ifopbl/ ifop, lodf
+      common /ifkbin/ ifkbin
+      common /odfvtn/ neediv
+      common /filter/ ifilter
+      common /odfave/ ameanODF
+
+      character(len=8) lodf
+      logical         ifop(20)
+      logical         ifkbin
+      integer         neediv
+      integer         ifilter
+      integer         ameanODF
+
+!*
+!***************** E N D  O F   C O M M O N   I F O P B L *****************
+!*

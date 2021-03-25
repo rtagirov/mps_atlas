@@ -1,0 +1,6 @@
+!*.... 
+      common /stateb/  p, rho, xnatom, xne
+      double precision p(maxd), rho(maxd), xnatom(maxd), xne(maxd)
+!*
+!***************** E N D  O F   C O M M O N   S T A T E B *****************
+!*

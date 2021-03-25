@@ -1,0 +1,8 @@
+!*....
+      common / tabptv / tabkap,  tabv, iftabk, np, nt, nv
+      double precision  tabkap(56,38,5),  tabv(5)
+      integer           np, nt, nv
+      logical           iftabk
+!*
+!***************** E N D  O F   C O M M O N   T A B P T V *****************
+!*

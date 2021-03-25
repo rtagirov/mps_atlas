@@ -1,0 +1,15 @@
+!....
+      common / xnfpbl/ xnfpal, xnfpb,  xnfpc, xnfpca, xnfpch, xnfpfe 
+      common /xnfpbl1/ xnfpk,  xnfpmg, xnfpn, xnfpna, xnfpne, xnfpo 
+      common /xnfpbl2/ xnfpoh, xnfpsi
+      common /xnfpbl3/ xnfpnh
+!
+      double precision xnfpal(maxd, 2), xnfpb(maxd, 1),  xnfpc(maxd, 4)  
+      double precision xnfpca(maxd, 2), xnfpch(maxd),   xnfpfe(maxd, 1) 
+      double precision xnfpk(maxd, 1),  xnfpmg(maxd, 2), xnfpn(maxd, 5)  
+      double precision xnfpna(maxd, 1), xnfpne(maxd, 6), xnfpo(maxd, 6)  
+      double precision xnfpoh(maxd),   xnfpsi(maxd, 2)
+      double precision xnfpnh(maxd)
+!*
+!***************** E N D  O F   C O M M O N   X N F P B L *****************
+!*
