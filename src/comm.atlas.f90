@@ -16,7 +16,8 @@ MODULE ATLCOMM
 !.... maxmu  = maximum number of angles for the radiation field
 !.... maxnu  = the maximum number of frequencies
 
-  integer, parameter :: maxd = 360
+!  integer, parameter :: maxd = 360
+  integer, parameter :: maxd = 1000
   integer, parameter :: maxloc = 600
   integer, parameter :: maxmeq = 30
   integer, parameter :: maxmol = 200

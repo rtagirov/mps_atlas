@@ -107,6 +107,7 @@
       real(kind=8), allocatable :: stau(:), st(:), sp(:) 
       real(kind=8) :: maxTch1, maxTch2
       integer :: indexT
+      integer :: structnum
 !
 !-------------------------------  EXTERNALS ----------------------------
 !
@@ -390,12 +391,10 @@
 !
 
          if((more) .and. (itemp .eq. 0)) then
-            read (33,*) nmod
-            read (33,*) nrhox
-            if(nrhox .gt. maxd) then
-               write( *,*) ' nrhox = ', nrhox, ', which is > maxd'
-               stop
-         end if
+            read (33, *) nmod
+!            read (33,*) nrhox
+
+            print*, 'nmod = ', nmod
 
 !     WRITE TITLE INFO TO OUTPUT FILES 
 !
@@ -461,6 +460,15 @@
         end do
 
       else if (imod .gt. 1) then 
+
+            read(33, *) structnum, nrhox
+
+            print*, 'structnum = ', structnum, 'nrhox = ', nrhox
+
+            if (nrhox .gt. maxd) then
+               write( *,*) ' nrhox = ', nrhox, ', which is > maxd'
+               stop
+            endif
 
             read (33, *) (rhox(j), t(j), p(j), xne(j),
      &            abross(j), accrad(j), vturb(j), j = 1, nrhox)

@@ -1,3 +1,5 @@
-./linelists
-./src/*.o
-./src/*.mod
+linelists/
+src/*.o
+src/*.mod
+NetCDF/*.o
+NetCDF/*.a

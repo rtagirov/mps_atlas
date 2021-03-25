@@ -1,6 +1,6 @@
-calc_odf on 
-calc_flux off 
-calc_model on  
+calc_odf off
+calc_flux on
+calc_model off
 
 odf_input =./INPUT/odf.input 
 odf_tp_grid =./INPUT/odf.tpgrid

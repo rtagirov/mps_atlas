@@ -1,11 +1,12 @@
-#FC=ifort 
-FC= mpif90    
+FC=ifort 
+#FC= mpif90    
 PROG=mps-atlas-run.x
 
 
 LFLAGS =
 #ifort preprocessor flags
-FPPFLAGS = "-DMPI -DORIGL "# -DDFSY" # -DDYNBIN" 
+#FPPFLAGS = "-DMPI -DORIGL "# -DDFSY" # -DDYNBIN" 
+FPPFLAGS = "-DORIGL "# -DDFSY" # -DDYNBIN" 
 
 FFLAGS = "-c"# -traceback  -heap-arrays -check bounds" 
 #  -stand f90  -assume realloc_lhs  -check all  -traceback   -fstack-protector  -assume protect_parens"  #-O2 
@@ -13,8 +14,8 @@ FFLAGS = "-c"# -traceback  -heap-arrays -check bounds"
 
 # NETCDF library routines
 
-INCLUDE="-I../lib/include"
-NETCDFLIB="-L../NetCDF -lnet -L../lib/lib -lnetcdf"
+INCLUDE="-I${HOME}/lib/include"
+NETCDFLIB="-L../NetCDF -lnet -L${HOME}/lib/lib -lnetcdf"
 
 ####################################################################
 
