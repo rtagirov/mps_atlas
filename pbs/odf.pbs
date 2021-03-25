@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -N odf_asplund
-#PBS -l walltime=01:50:00 
+#PBS -l walltime=00:10:00 
 #PBS -lselect=1:ncpus=4:mem=1GB
 
 # load module(s)
@@ -13,7 +13,7 @@ module load netcdf/4.0.1-mcmodel-medium
 
 base=/rds/general/user/rtagirov/ephemeral/runs/atlas
 
-dir=$base/odf_asplund
+dir=$base/odf_asplund_02
 
 tmp=$TMPDIR
 
@@ -21,7 +21,7 @@ cp -r $dir/* -t $tmp
 
 # launch the application
 #mpiexec -np ${NP} ./$tmp/run-mpsa.x > atlas.log
-mpiexec ./$tmp/run-mpsa.x > atlas.log
+mpiexec ./$tmp/run-mpsa.x > $tmp/atlas.log
 
 rsync -rptgoDq $tmp/ $dir/
 
