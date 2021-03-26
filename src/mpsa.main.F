@@ -393,8 +393,11 @@
          if((more) .and. (itemp .eq. 0)) then
             read (33, *) nmod
 !            read (33,*) nrhox
+            read(33, *) structnum, nrhox
 
             print*, 'nmod = ', nmod
+
+            print*, 'structnum = ', structnum, 'nrhox = ', nrhox
 
 !     WRITE TITLE INFO TO OUTPUT FILES 
 !
