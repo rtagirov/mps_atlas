@@ -21,6 +21,7 @@ cp -r $dir/* -t $tmp
 
 # launch the application
 #mpiexec -np ${NP} ./$tmp/run-mpsa.x > atlas.log
+#mpiexec run-mpsa.x > $tmp/atlas.log
 mpiexec ./$tmp/run-mpsa.x > $tmp/atlas.log
 
 rsync -rptgoDq $tmp/ $dir/
