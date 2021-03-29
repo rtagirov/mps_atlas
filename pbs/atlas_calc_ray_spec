@@ -1,0 +1,129 @@
+#!/bin/sh
+
+clean()
+{
+rm -f $1/slice.inp
+
+files=($(ls $1))
+
+declare -i ln
+
+ln=${#files[@]}-1
+
+for n in $(seq 0 $ln)
+do
+
+    if [ ! -L $1/${files[n]} ]
+    then
+
+        rm -rf $1/${files[n]}
+
+    fi
+
+done
+}
+
+#parsed by qsub
+#run
+#atm
+#flog
+#slog
+#spec
+#frac
+#Nr
+
+#set -x
+
+module load intel-suite
+module load netcdf/4.0.1-mcmodel-medium
+
+base=/rds/general/user/rtagirov/ephemeral/runs/atlas
+
+tmp=$TMPDIR
+
+mkdir -p $tmp/INPUT
+
+cd $tmp/INPUT
+
+ln -s $base/$run/INPUT/* ./
+
+cd -
+cd $tmp
+
+ln -s $base/$run/mpsa.control ./
+ln -s $base/$run/run-mpsa.x   ./
+
+cd -
+
+declare -i Nr
+declare -i frac
+declare -i f x y g r
+
+g=$PBS_ARRAY_INDEX
+
+for ((r=1; r<=Nr; r+=1)); do
+
+    f=(g-1)*Nr+r
+
+    f=f*frac
+
+    x=f/512+1
+    y=f%512
+
+    rid="$g,$r;$x,$y"
+
+    if ((y == 0)); then x=x-1; y=512; fi
+
+    dir=$base/$run/groups/$g/$r
+
+    if [ -d $dir ]; then rm -rf $dir; fi
+
+    mkdir -p $dir
+
+    ln -s $HOME/atms/$atm/$x $tmp/INPUT/slice.inp
+
+    echo $y > $tmp/rn.inp
+
+    /usr/bin/time -v $tmp/run-mpsa.x > $tmp/atlas.log 2>&1
+
+    cp -P $tmp/slice.inp $dir
+
+    rsync -aq --no-links $tmp/ $dir/
+
+    clean $tmp
+
+    if [ ! -s $dir/hminus.log ]; then echo "$rid: no hminus log" >> $flog; continue; fi
+
+    noconv=$(grep 'MAX. NUMBER OF JOBS EXCEEDED' $dir/hminus.log)
+
+    conv=$(grep 'MODEL FINALLY CONVERGED' $dir/hminus.log)
+
+    lte=$(grep 'END OF LTE RUN' $dir/hminus.log)
+
+    rne_fail=$(grep 'greym: RNEL does not converge' $dir/hminus.log)
+
+    if [ "$noconv" ];                 then echo "$rid: no convergence" >>  $flog; continue; fi
+
+    if [ "$rne_fail" ];               then echo "$rid: rne fail" >>        $flog; continue; fi
+
+    if [ ! "$conv" ] && [ ! "$lte" ]; then echo "$rid: hminus fail" >>     $flog; continue; fi
+
+    if [ ! -s $dir/fioss.log ];       then echo "$rid: no fioss log" >>    $flog; continue; fi
+
+    fioss_fail=$(grep -i fail $dir/fioss.log | head -1)
+
+    if [ "$fioss_fail" ];             then echo "$rid: fioss fail" >>      $flog; continue; fi
+
+    if [ ! -s $dir/spec.out ];        then echo "$rid: no spectrum" >>     $flog; continue; fi
+
+    spec_nans=$(grep -i nan $dir/spec.out | head -1)
+
+    if [ "$spec_nans" ];              then echo "$rid: nan in spectrum" >> $flog; continue; fi
+
+    echo $rid: >> $slog
+
+    cp $dir/spec.out $spec/$x.$y
+
+done
+
+module purge

@@ -1,0 +1,180 @@
+#!/bin/sh
+
+clean(){
+
+rm -f $1/atm.inp
+
+files=$(ls $1)
+
+for f in $files; do
+
+    if [ ! -L $1/$f ]
+    then
+
+        rm -rf $1/$f 
+
+    fi
+
+done
+
+}
+
+#parsed by qsub
+#mode
+#run
+#w1, w2
+
+module load intel-suite
+
+scr=$HOME/nessy/scr
+inp=$HOME/nessy/inp
+obj=$HOME/nessy/obj
+
+if [ "$mode" == "0" ]; then fort99=lte;     fi
+if [ "$mode" == "1" ]; then fort99=wrstart; fi
+
+base=/rds/general/user/rtagirov/ephemeral/runs/nessy
+
+tmp=$TMPDIR
+
+ln -s $inp/gen/*            $tmp
+
+ln -s $scr/fioss_do2        $tmp
+ln -s $scr/fioss_cplink_dir $tmp
+ln -s $scr/fioss_mv_results $tmp
+ln -s $obj/hminus.exe       $tmp
+ln -s $obj/fioss.exe        $tmp
+
+declare -i gid rid idx
+declare -i snum rnum
+
+gid=$PBS_ARRAY_INDEX
+
+for (( rid=1; rid<=32; rid+=1 )); do
+
+    idx=($gid-1)*32+$rid
+
+    snum=$(($idx/512 + 1))
+    rnum=$(($idx%512))
+
+    if (( $rnum == 0 )); then snum=$snum-1; rnum=512; fi
+
+    dir=$base/$run/$gid/$rid
+
+    if [ -d "$dir" ]; then rm -r $dir; fi
+
+    ln -s $HOME/atms/$atms/$snum $tmp/atm.inp
+
+    echo $fort99 > $tmp/fort.99
+    echo $rnum   > $tmp/rn.inp
+
+    /usr/bin/time -v $tmp/hminus.exe > $tmp/hminus.log 2>&1
+
+    if [[ ! -s $tmp/hminus.log ]]
+    then
+
+        echo $snum/$rnum: no hminus log >> $base/$run/fail.log
+
+#        clean $tmp
+
+        continue
+
+    fi
+
+    noconv=$(grep 'MAX. NUMBER OF JOBS EXCEEDED' $tmp/hminus.log)
+
+    conv=$(grep 'MODEL FINALLY CONVERGED' $tmp/hminus.log)
+
+    lte=$(grep 'END OF LTE RUN' $tmp/hminus.log)
+
+    rne_fail=$(grep 'greym: RNEL does not converge' $tmp/hminus.log)
+
+    if [[ ! -z $noconv ]]
+    then
+
+        echo $snum/$rnum: no convergence >> $base/$run/fail.log
+
+#        clean $tmp
+
+        continue
+
+    fi
+
+    if [[ ! -z $rne_fail ]]
+    then
+
+        echo $snum/$rnum: rne fail >> $base/$run/fail.log
+
+#        clean $tmp
+
+        continue
+
+    fi
+
+    if [[ -z $conv ]] && [[ -z $lte ]]
+    then
+
+        echo $snum/$rnum: hminus fail >> $base/$run/fail.log
+
+#        clean $tmp
+
+        continue
+
+    fi
+
+#    rm -f $tmp/hminus.log
+
+    /usr/bin/time -v $tmp/fioss_do2 $w1 10 $w2 > $tmp/fioss.log 2>&1
+
+    if [[ ! -s $tmp/fioss.log ]]
+    then
+
+        echo $snum/$rnum: no fioss log >> $base/$run/fail.log
+
+#        clean $tmp
+
+        continue
+
+    fi
+
+    fail=$(grep -i fail $tmp/fioss.log)
+
+    if [[ ! -z $fail ]]
+    then
+
+        echo $snum/$rnum: fioss fail >> $base/$run/fail.log
+
+#        clean $tmp
+
+        continue
+
+    fi
+
+#    rm -f $tmp/fioss.log
+
+    if [[ ! -s $tmp/spec.out ]]
+    then
+
+        echo $snum/$rnum: no spectrum >> $base/$run/fail.log
+
+#        clean $tmp
+
+        continue
+
+    fi
+
+    echo $snum $rnum   >> $base/$run/spec.out 
+    cat  $tmp/spec.out >> $base/$run/spec.out
+
+#    rm -f $dir/spec.out
+
+    mkdir -p $dir
+
+    cp -P $tmp/atm.inp $dir
+
+#    rsync -rptgoDq $tmp/ $dir/
+    rsync -a --no-links $tmp/ $dir/
+
+    clean $tmp
+
+done

@@ -3,3 +3,4 @@ src/*.o
 src/*.mod
 NetCDF/*.o
 NetCDF/*.a
+bin/run-mpsa.x

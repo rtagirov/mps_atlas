@@ -1,0 +1,60 @@
+#!/bin/sh
+
+mode=1
+
+if [ "$mode" != "0" ] && [ "$mode" != "1" ]; then echo "mode is not recognized. abort."; exit 1; fi
+
+runs='G2V/hydro/123_wcr_24'
+atms='G2V/hydro/123_wcr'
+
+a=($atms)
+
+w1=1800
+w2=2990
+
+st=1
+en=8192
+#en=2
+
+wt=24:00:00
+#wt=48:00:00
+#wt=72:00:00
+
+ncpus=1
+
+mem=2gb
+
+base=/rds/general/user/rtagirov/ephemeral/runs/nessy
+
+declare -i j
+
+j=0
+
+for run in $runs; do
+
+mkdir -p $base/$run
+
+rm -f $base/$run/fail.log
+rm -f $base/$run/spec.out
+
+IFS='/' read -r -a array <<< "$run"
+
+name=${array[-1]}:$en
+
+qsub -v \
+mode=$mode,\
+run=$run,\
+atms=${a[$j]},\
+w1=$w1,\
+w2=$w2 \
+-J $st-$en:1 \
+-o $HOME/log/$JOB_ID \
+-e $HOME/log/$JOB_ID \
+-N $name \
+-lwalltime=$wt \
+-lselect=1:ncpus=$ncpus:mem=$mem:avx2=true calc_ray_spec
+
+
+j=$j+1
+
+done

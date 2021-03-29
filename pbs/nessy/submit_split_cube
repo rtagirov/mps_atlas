@@ -1,0 +1,227 @@
+#!/bin/sh
+
+if [ $# != 7 ]; then
+ 
+   echo expecting 7 arguments: stype, ctype, rfrac, rname, rmode, rangl, apath
+ 
+   exit 1
+ 
+fi
+
+stype=$1
+ctype=$2
+rfrac=$3
+rname=$4
+rmode=$5
+rangl=$6
+apath=$7
+
+if [ $rmode != lte ] && [ $rmode != nlte ]; then
+
+    echo "rmode is not recognized. abort."
+
+    exit 1
+
+fi
+
+declare -i Nt Ng Ns Nr
+declare -i f x y g r
+declare -i gs ge
+#declare -i dfac
+declare -i s
+
+Nt=512*512
+
+#full cube, Nr rays per processor
+Ng=8192
+Ns=${N_sub:-1}
+Nr=Nt/Ng/Ns
+
+#dfac=1
+
+ws=1800
+we=2990
+
+walltime=24:00:00
+
+#---------------------------------------------------------
+
+#quarter of a cube, 1 ray per processor, 16 submissions
+#Ng=4096
+#Ns=16
+#Nr=1
+
+#dfac=4
+
+#ws=1800
+#we=2990
+
+#walltime=24:00:00
+
+#---------------------------------------------------------
+
+#quarter of a cube, 1 ray per processor, 32 submissions
+#Ng=2048
+#Ns=32
+#Nr=1
+
+#dfac=4
+
+#ws=1800
+#we=2990
+
+#walltime=24:00:00
+
+#---------------------------------------------------------
+
+#eighth of a cube, 1 ray per processor, 4 submissions
+Ng=8192
+Ns=4
+Nr=1
+
+#dfac=8
+
+ws=1800
+we=2990
+
+walltime=24:00:00
+
+#---------------------------------------------------------
+
+#test
+#Ns=2
+#Ng=2
+#Nr=2
+
+#dfac=1
+
+#walltime=00:30:00
+
+#ws=1800
+#we=1800
+
+base=/rds/general/user/rtagirov/ephemeral/runs/nessy
+
+run=$stype/$ctype/$rfrac/$rname/$rmode/$rangl
+atm=$stype/$ctype/$apath
+
+scr=$HOME/nessy/scr
+obj=$HOME/nessy/obj
+inp=$HOME/nessy/inp
+
+ldo=$HOME/log/$run/out
+lde=$HOME/log/$run/err
+
+slog=$base/$run/success.log
+flog=$base/$run/fail.log
+spec=$base/$run/spec
+
+mkdir -p $base/$run $ldo $lde
+
+if [ -d $base/$run/inp ]; then rm -r $base/$run/inp; fi
+
+mkdir -p $base/$run/inp
+
+echo Copying input files...
+
+#cp -r $inp/gen $base/$run/inp
+
+cp -r $inp/gen/CARDS.TEMPLATE $base/$run/inp
+cp -r $inp/gen/cards.inp      $base/$run/inp
+cp -r $inp/gen/datom.inp      $base/$run/inp
+cp -r $inp/gen/fgrid.inp      $base/$run/inp
+cp -r $inp/gen/chem.inp       $base/$run/inp
+cp -r $inp/gen/fudge.inp      $base/$run/inp
+cp -r $inp/gen/sun.inp        $base/$run/inp
+
+ln -s $inp/gen/fort.19.d      $base/$run/inp
+ln -s $inp/gen/odf.inp        $base/$run/inp
+ln -s $inp/gen/fort           $base/$run/inp
+ln -s $inp/gen/crs            $base/$run/inp
+ln -s $inp/gen/mol            $base/$run/inp
+
+echo Removing old spectra...
+
+rm -rf   $spec
+mkdir -p $spec
+
+echo Removing old logs...
+
+rm -f $slog
+rm -f $flog
+rm -f $ldo/*
+rm -f $lde/*
+#rm -f $base/$run/leftover.*.*.*.log
+
+echo $rfrac $Ns $Nr > $base/$run/split.log
+
+cp $obj/hminus.exe       $base/$run
+cp $obj/fioss.exe        $base/$run
+
+cp $scr/fioss_cplink_dir $base/$run
+cp $scr/fioss_mv_results $base/$run
+cp $scr/fioss_do2        $base/$run
+
+#echo Creating logs for leftover rays...
+
+#for ((s=1; s<=Ns; s+=1)); do
+
+#    llog=$base/$run/leftover.${Nr}.${Ns}.${s}.log
+
+#    gs=(s-1)*Ng+1
+#    ge=s*Ng
+
+#    for ((g=gs; g<=ge; g+=1)); do
+
+#        for ((r=1; r<=Nr; r+=1)); do
+
+#            f=(g-1)*Nr+r
+
+#            x=f/512+1
+#            y=f%512
+
+#            if ((y == 0)); then x=x-1; y=512; fi
+
+#            echo $g,$r: >> $llog
+
+#        done
+
+#    done
+
+#done
+
+for ((s=1; s<=Ns; s+=1)); do
+
+#llog=$base/$run/leftover.${Nr}.${Ns}.${s}.log
+#tlog=$base/$run/.leftover.${s}.log.temp
+
+gs=(s-1)*Ng+1
+ge=s*Ng
+
+IFS='/' read -r -a array <<< "$run"
+
+#name=${array[-1]}:$s
+name=${ctype:0:1}/$rfrac/$rname/${rmode:0:1}/$rangl:$s
+
+qsub -v \
+rmode=$rmode,\
+run=$run,\
+atm=$atm,\
+slog=$slog,\
+flog=$flog,\
+spec=$spec,\
+frac=$rfrac,\
+Nr=$Nr,\
+ws=$ws,\
+we=$we \
+-J $gs-$ge:1 \
+-o $ldo \
+-e $lde \
+-N $name \
+-lwalltime=$walltime \
+-lselect=1:ncpus=1:mem=2gb:avx2=true calc_ray_spec
+
+done
+
+#tlog=$tlog,\
+#llog=$llog,\

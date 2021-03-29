@@ -1,0 +1,136 @@
+#!/bin/sh
+
+if [ $# != 6 ]; then
+ 
+   echo expecting 6 arguments: rmode, Ns, stype, ctype, rname, apath
+ 
+   exit 1
+ 
+fi
+
+rmode=$1
+stype=$3
+ctype=$4
+rname=$5
+apath=$6
+
+if [ $rmode != lte ] && [ $rmode != nlte ]; then
+
+    echo "rmode is not recognized. abort."
+
+    exit 1
+
+fi
+
+declare -i Nt Ng Ns Nr
+#declare -i ws we nf nl
+declare -i f x y g r
+declare -i gs ge
+declare -i s
+
+Nt=512*512
+Ng=8192
+#Ng=2
+
+Ns=$2
+Nr=Nt/Ng/Ns
+#Nr=2
+
+#nf=1
+
+ws=1800
+#we=1800
+we=2990
+
+#nl=(we-ws+10)*nf/10
+
+#walltime=01:00:00
+walltime=24:00:00
+
+base=/rds/general/user/rtagirov/ephemeral/runs/nessy
+
+run=$stype/$ctype/$rname
+atm=$stype/$ctype/$apath
+
+scr=$HOME/nessy/scr
+obj=$HOME/nessy/obj
+
+ldo=$HOME/log/$run/out
+lde=$HOME/log/$run/err
+
+mkdir -p $base/$run $ldo $lde
+
+#rlog=$base/$run/run.log.$Ns.$Nr
+slog=$base/$run/success.log
+flog=$base/$run/fail.log
+spec=$base/$run/spec.out
+
+echo Removing old spectrum...
+
+rm -f $spec
+
+echo Removing old logs...
+
+rm -f $flog
+rm -f $slog
+rm -f $ldo/*
+rm -f $lde/*
+
+echo $Ns $Nr > $base/$run/split.log
+
+cp $obj/hminus.exe       $base/$run
+cp $obj/fioss.exe        $base/$run
+
+cp $scr/fioss_cplink_dir $base/$run
+cp $scr/fioss_mv_results $base/$run
+cp $scr/fioss_do2        $base/$run
+
+#for ((s=1; s<=Ns; s+=1)); do
+
+#    gs=(s-1)*Ng+1
+#    ge=s*Ng
+
+#    for ((g=gs; g<=ge; g+=1)); do
+
+#        for ((r=1; r<=Nr; r+=1)); do
+
+#            f=(g-1)*Nr+r
+
+#            x=f/512+1
+#            y=f%512
+
+#            if ((y == 0)); then x=x-1; y=512; fi
+
+#            echo "$g,$r; $x,$y: not finished" >> $rlog
+
+#        done
+
+#    done
+
+#done
+
+for ((s=1; s<=Ns; s+=1)); do
+
+gs=(s-1)*Ng+1
+ge=s*Ng
+
+IFS='/' read -r -a array <<< "$run"
+
+qsub -v \
+rmode=$rmode,\
+run=$run,\
+atm=$atm,\
+flog=$flog,\
+slog=$slog,\
+spec=$spec,\
+Nr=$Nr,\
+ws=$ws,\
+we=$we \
+-J $gs-$ge:1 \
+-o $ldo \
+-e $lde \
+-N ${array[-1]}:$s \
+-lwalltime=$walltime \
+-lselect=1:ncpus=1:mem=2gb:avx2=true calc_ray_spec
+
+done

@@ -1,0 +1,176 @@
+#!/bin/sh
+
+clean()
+{
+rm -f $1/atm.inp
+
+files=($(ls $1))
+
+declare -i ln
+
+ln=${#files[@]}-1
+
+for n in $(seq 0 $ln)
+do
+
+    if [ ! -L $1/${files[n]} ]
+    then
+
+        rm -rf $1/${files[n]}
+
+    fi
+
+done
+}
+
+#log_fail()
+#{
+#message="$rid: rne fail"
+
+#echo "$1" >> $flog
+
+#continue
+#}
+
+#edit_run_log()
+#{
+#c='1,$s/'$1': not finished/'$2'/g'
+
+#printf "%s\n" "$c" wq | ed -s $3
+#}
+
+#parsed by qsub
+#rmode
+#run
+#atm
+#flog
+#slog
+#spec
+#Nr
+#ws
+#we
+
+#set -x
+
+module load intel-suite
+
+base=/rds/general/user/rtagirov/ephemeral/runs/nessy
+
+inp=$HOME/nessy/inp
+
+tmp=$TMPDIR
+
+ln -s $inp/gen/*                  $tmp
+
+ln -s $base/$run/fioss_do2        $tmp
+ln -s $base/$run/fioss_cplink_dir $tmp
+ln -s $base/$run/fioss_mv_results $tmp
+
+ln -s $base/$run/hminus.exe       $tmp
+ln -s $base/$run/fioss.exe        $tmp
+
+declare -i Nr
+declare -i f x y g r
+
+if [ $rmode = lte ];  then fort99=lte;     fi
+if [ $rmode = nlte ]; then fort99=wrstart; fi
+
+g=$PBS_ARRAY_INDEX
+
+for ((r=1; r<=Nr; r+=1)); do
+
+    f=(g-1)*Nr+r
+
+    x=f/512+1
+    y=f%512
+
+    rid="$g,$r; $x,$y"
+
+    if ((y == 0)); then x=x-1; y=512; fi
+
+    dir=$base/$run/groups/$g/$r
+
+    if [ -d $dir ]; then rm -rf $dir; fi
+
+    mkdir -p $dir
+
+    ln -s $HOME/atms/$atm/$x $tmp/atm.inp
+
+    echo $fort99 > $tmp/fort.99
+    echo $y      > $tmp/rn.inp
+
+    /usr/bin/time -v $tmp/hminus.exe > $tmp/hminus.log 2>&1
+
+    if [ -s $tmp/hminus.log ]
+    then
+
+        rne_fail=$(grep 'greym: RNEL does not converge' $tmp/hminus.log)
+
+        if [ ! "$rne_fail" ]
+        then
+
+            conv=$(grep 'MODEL FINALLY CONVERGED' ${tmp}/hminus.log)
+            lte=$(grep 'END OF LTE RUN' ${tmp}/hminus.log)
+
+            if [ "$conv" ] || [ "$lte" ]
+            then
+
+               /usr/bin/time -v $tmp/fioss_do2 $ws 10 $we > $tmp/fioss.log 2>&1
+
+            fi
+
+        fi
+
+    fi
+
+    cp -P $tmp/atm.inp $dir
+
+    rsync -aq --no-links $tmp/ $dir/
+
+    clean $tmp
+
+    if [ ! -s $dir/hminus.log ]; then echo "$rid: no hminus log" >> $flog; continue; fi
+
+    noconv=$(grep 'MAX. NUMBER OF JOBS EXCEEDED' $dir/hminus.log)
+
+    conv=$(grep 'MODEL FINALLY CONVERGED' $dir/hminus.log)
+
+    lte=$(grep 'END OF LTE RUN' $dir/hminus.log)
+
+    rne_fail=$(grep 'greym: RNEL does not converge' $dir/hminus.log)
+
+    if [ "$noconv" ];                 then echo "$rid: no convergence" >>  $flog; continue; fi
+
+    if [ "$rne_fail" ];               then echo "$rid: rne fail" >>        $flog; continue; fi
+
+    if [ ! "$conv" ] && [ ! "$lte" ]; then echo "$rid: hminus fail" >>     $flog; continue; fi
+
+    if [ ! -s $dir/fioss.log ];       then echo "$rid: no fioss log" >>    $flog; continue; fi
+
+    fioss_fail=$(grep -i fail $dir/fioss.log | head -1)
+
+    if [ "$fioss_fail" ];             then echo "$rid: fioss fail" >>      $flog; continue; fi
+
+    if [ ! -s $dir/spec.out ];        then echo "$rid: no spectrum" >>     $flog; continue; fi
+
+    spec_nans=$(grep -i nan $dir/spec.out | head -1)
+
+    if [ "$spec_nans" ];              then echo "$rid: nan in spectrum" >> $flog; continue; fi
+
+    echo $rid: >> $slog
+
+    echo $g $r $x $y   >> $spec
+    cat  $dir/spec.out >> $spec
+
+done
+
+# if [ $x ] && [ $y ] && [ $g ] && [ $r ] && ((snl == nl))
+# edit_run_log "$rid" "$message" $rlog
+# sed -i "${f}s/.*/$message/" $base/$run/run.log.$Ns.$Nr
+
+#   sometimes g, r, x, y or $dir/spec.out 
+#   turn out to be empty for reasons unknown
+#   here we check that it is not the case
+#   and then count the ray as successful
+
+#    snl=$(wc -l $dir/spec.out | awk '{print $1}')

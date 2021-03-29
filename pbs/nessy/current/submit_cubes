@@ -1,0 +1,7 @@
+#!/bin/bash
+
+submit_split_cube lte  8 G2V hydro 123_lte  123_wcr
+submit_split_cube lte  8 G2V 300G  118_lte  118_wcr
+
+submit_split_cube nlte 8 G2V hydro 123_nlte 123_wcr
+submit_split_cube nlte 8 G2V 300G  118_nlte 118_wcr

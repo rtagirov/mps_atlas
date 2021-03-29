@@ -1,0 +1,164 @@
+#!/bin/sh
+
+#parsed by qsub
+#mode
+#run
+#w1, w2
+
+module load intel-suite
+
+scr=$HOME/nessy/scr
+
+inp=$HOME/nessy/inp
+obj=$HOME/nessy/obj
+
+if [ "$mode" == "0" ]; then fort99=lte;     fi
+if [ "$mode" == "1" ]; then fort99=wrstart; fi
+
+base=/rds/general/user/rtagirov/ephemeral/runs/nessy
+
+declare -i gid rid idx
+declare -i snum rnum
+
+gid=$PBS_ARRAY_INDEX
+
+for (( rid=1; rid<=32; rid+=1 )); do
+
+    idx=($gid-1)*32+$rid
+
+    snum=$(($idx/512 + 1))
+    rnum=$(($idx%512))
+
+    if (( $rnum == 0 )); then snum=$snum-1; rnum=512; fi
+
+    dir=$base/$run/$gid/$rid
+    tmp=$TMPDIR
+
+    #if [ ! -d $base/gen ]; then cp -r $inp/gen -t $base; fi
+    if [ -d "$dir" ]; then rm -r $dir; fi
+
+    mkdir -p $dir
+
+    ln -s  $base/gen/* $dir
+
+    unlink $dir/fort.99
+    unlink $dir/atm.inp
+
+    ln -s $HOME/atms/$atms/$snum $dir/atm.inp
+
+    ln -s  $scr/fioss_do2        -t $dir
+    ln -s  $scr/fioss_cplink_dir -t $dir
+    ln -s  $scr/fioss_mv_results -t $dir
+
+    ln -s  $obj/hminus.exe $dir
+    ln -s  $obj/fioss.exe  $dir
+
+    echo $fort99 > $dir/fort.99
+    echo $rnum   > $dir/rn.inp
+
+    cp -r $dir/* -t $tmp
+
+    /usr/bin/time -v $tmp/hminus.exe > $tmp/hminus.log 2>&1
+
+    if [[ -s $tmp/hminus.log ]]
+    then
+
+        rne_fail=$(grep 'greym: RNEL does not converge' $tmp/hminus.log)
+
+        if [[ -z $rne_fail ]]
+        then
+
+            conv=$(grep 'MODEL FINALLY CONVERGED' ${tmp}/hminus.log)
+            lte=$(grep 'END OF LTE RUN' ${tmp}/hminus.log)
+
+            if [[ ! -z $conv ]] || [[ ! -z $lte ]]; then
+
+               /usr/bin/time -v $tmp/fioss_do2 $w1 10 $w2 > $tmp/fioss.log 2>&1
+
+            fi
+
+        fi
+
+    fi
+
+    rsync -rptgoDq $tmp/ $dir/
+
+    if [[ ! -s $dir/hminus.log ]]
+    then
+
+        echo $snum/$rnum: no hminus log >> $base/$run/fail.log
+
+        continue
+
+    fi
+
+    noconv=$(grep 'MAX. NUMBER OF JOBS EXCEEDED' $dir/hminus.log)
+
+    conv=$(grep 'MODEL FINALLY CONVERGED' $dir/hminus.log)
+
+    lte=$(grep 'END OF LTE RUN' $dir/hminus.log)
+
+    rne_fail=$(grep 'greym: RNEL does not converge' $dir/hminus.log)
+
+    if [[ ! -z $noconv ]]
+    then
+
+        echo $snum/$rnum: no convergence >> $base/$run/fail.log
+
+        continue
+
+    fi
+
+    if [[ ! -z $rne_fail ]]
+    then
+
+        echo $snum/$rnum: rne fail >> $base/$run/fail.log
+
+        continue
+
+    fi
+
+    if [[ -z $conv ]] && [[ -z $lte ]]
+    then
+
+        echo $snum/$rnum: hminus fail >> $base/$run/fail.log
+
+        continue
+
+    fi
+
+    if [[ ! -s $dir/fioss.log ]]
+    then
+
+        echo $snum/$rnum: no fioss log >> $base/$run/fail.log
+
+        continue
+
+    fi
+
+    fail=$(grep -i fail $dir/fioss.log)
+
+    if [[ ! -z $fail ]]
+    then
+
+        echo $snum/$rnum: fioss fail >> $base/$run/fail.log
+
+        continue
+
+    fi
+
+    if [[ ! -s $dir/spec.out ]]
+    then
+
+        echo $snum/$rnum: no spectrum >> $base/$run/fail.log
+
+        continue
+
+    fi
+
+    echo $snum $rnum   >> $base/$run/spec.out 
+    cat  $dir/spec.out >> $base/$run/spec.out
+
+#    rm $dir/spec.out
+
+done

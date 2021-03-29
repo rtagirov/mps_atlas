@@ -1,0 +1,58 @@
+#!/bin/bash
+
+export N_sub=8
+
+#submit_split_cube lte  G2V hydro 123_lte  123_wcr
+#submit_split_cube lte  G2V 300G  118_lte  118_wcr
+
+#submit_split_cube nlte G2V hydro 123_nlte 123_wcr
+#submit_split_cube nlte G2V 300G  118_nlte 118_wcr
+
+#------------------------------------------------------
+
+#submit_split_cube lte  G2V hydro 123_lte_eh  123_wcr
+#submit_split_cube lte  G2V 300G  118_lte_eh  118_wcr
+
+#submit_split_cube nlte G2V hydro 123_nlte_eh 123_wcr
+#submit_split_cube nlte G2V 300G  118_nlte_eh 118_wcr
+
+#-------------------------------------------------------
+
+#submit_split_cube nlte G2V hydro 123_nlte_eh 123_wcr
+
+#-------------------------------------------------------
+
+#submit_split_cube lte  G2V ssd 186_lte  186_wcr
+#submit_split_cube nlte G2V ssd 186_nlte 186_wcr
+
+#-------------------------------------------------------
+
+#submit_split_cube lte  G2V hydro 123_lte_mu_08  123_wcr_mu_08
+#submit_split_cube lte  G2V 300G  118_lte_mu_08  118_wcr_mu_08
+
+#submit_split_cube nlte G2V hydro 123_nlte_mu_08 123_wcr_mu_08
+#submit_split_cube nlte G2V 300G  118_nlte_mu_08 118_wcr_mu_08
+
+#------------------------------------------------------
+
+#submit_split_cube G2V hydro 8 angles nlte 6 mu/6
+#submit_split_cube G2V 300G  8 angles nlte 6 mu/6
+
+#submit_split_cube G2V hydro 8 angles lte  6 mu/6
+#submit_split_cube G2V 300G  8 angles lte  6 mu/6
+
+#submit_split_cube G2V ssd   8 angles nlte 8 mu/8
+#submit_split_cube G2V ssd   8 angles nlte 6 mu/6
+
+#submit_split_cube G2V ssd   8 angles lte  8 mu/8
+#submit_split_cube G2V ssd   8 angles lte  6 mu/6
+
+#------------------------------------------------------
+
+submit_split_cube G2V hydro 8 angles nlte 4 mu/4
+submit_split_cube G2V ssd   8 angles nlte 4 mu/4
+submit_split_cube G2V 300G  8 angles nlte 4 mu/4
+
+submit_split_cube G2V hydro 8 angles lte  4 mu/4
+submit_split_cube G2V ssd   8 angles lte  4 mu/4
+submit_split_cube G2V 300G  8 angles lte  4 mu/4
