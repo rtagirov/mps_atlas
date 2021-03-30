@@ -23,8 +23,8 @@
 *
 *--------------------------- LOCAL VARIABLES --------------------------
 *
-      double precision  extau(maxd), slope, nc 
-      integer           j, mu
+      double precision  extau(maxd), slope
+      integer           j, mu, nc
 
 !---- test
       real(kind=8) ao(maxd), bo(maxd), co(maxd)
