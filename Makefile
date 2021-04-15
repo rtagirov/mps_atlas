@@ -15,7 +15,16 @@ FFLAGS = "-c"# -traceback  -heap-arrays -check bounds"
 
 # NETCDF library routines
 
+hn := $(shell hostname | cut -c 1-5)
+
+ifeq (${hn}, ph-rt)
+NFDIR=/home/rtagirov/lib
+endif
+#ifeq (${hn:0:5}, login)
+ifeq (${hn}, login)
 NFDIR=/apps/netcdf/4.0.1-mcmodel-medium
+endif
+
 
 INCLUDE="-I${NFDIR}/include"
 NETCDFLIB="-L../NetCDF -lnet -L${NFDIR}/lib -lnetcdf"
