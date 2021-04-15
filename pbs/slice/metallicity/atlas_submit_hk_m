@@ -1,0 +1,101 @@
+#!/bin/sh
+
+if [ $# != 3 ]; then
+ 
+   echo expecting 3 arguments: cube, snum, rangl
+ 
+   exit 1
+ 
+fi
+
+cube=$1
+snum=$2
+rangl=$3
+
+base=/rds/general/user/rtagirov/ephemeral/runs/atlas
+
+run=metallicity/$cube/$snum/$rangl
+
+echo -n "Submitting housekeeping for $run: "
+
+#echo Identifying remaining slices...
+
+declare -i Na Ns Nt Ntm1
+
+Na=${#rangl}
+Ns=512
+
+rem_slices=' '
+
+for ((i=0; i<$Na; i++)); do
+
+    mu=${rangl:$i:1}
+
+    for slice in $(seq 1 $Ns); do
+
+        if [ ! -f $base/$run/spec/$mu.$slice ]; then
+
+            rem_slices=$rem_slices' '$mu.$slice
+
+        fi
+
+    done
+
+done
+
+rem_slices_arr=($rem_slices)
+
+Nt=${#rem_slices_arr[@]}
+
+if ((Nt == 0)); then echo     $Nt remaining slices.;     exit 0; fi
+if ((Nt != 0)); then echo -n "$Nt remaining slices -> ";         fi
+
+remlog=$base/$run/rem_slices.log
+
+rm -f $remlog
+
+#echo Compiling the list of remaining slices...
+
+for ((i=0; i<$Nt; i++)); do
+
+    echo ${rem_slices_arr[i]} >> $remlog
+
+done
+
+atm=$cube/$snum
+
+ldo=$HOME/log/atlas/$run/hk/out
+lde=$HOME/log/atlas/$run/hk/err
+
+slog=$base/$run/success.hk.log
+flog=$base/$run/fail.hk.log
+spec=$base/$run/spec
+
+mkdir -p $ldo $lde
+
+#echo -n removing old logs...
+
+rm -f $slog
+rm -f $flog
+rm -f $ldo/*
+rm -f $lde/*
+
+#IFS='/' read -r -a array <<< "$run"
+
+name=h:${cube:0:5}/$snum/$rangl
+
+walltime=24:00:00
+
+qsub -v \
+run=$run,\
+atm=$atm,\
+slog=$slog,\
+flog=$flog,\
+spec=$spec,\
+rem_slices="$rem_slices" \
+-J 1-$Nt:1 \
+-o $ldo \
+-e $lde \
+-N $name \
+-lwalltime=$walltime \
+-lselect=1:ncpus=1:mem=2gb:avx2=true atlas_calc_slice_spec_hk_m

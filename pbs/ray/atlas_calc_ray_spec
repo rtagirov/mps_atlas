@@ -1,0 +1,135 @@
+#!/bin/sh
+
+clean()
+{
+#rm -f $1/INPUT/rn.inp
+#rm -f $1/INPUT/slice.inp
+#rm -f $1/INPUT/flux.model
+
+files=($(ls $1))
+
+declare -i ln
+
+ln=${#files[@]}-1
+
+for n in $(seq 0 $ln)
+do
+
+    if [ ! -L $1/${files[n]} ] && [ ! -d $1/${files[n]} ]
+    then
+
+        rm -rf $1/${files[n]}
+
+    fi
+
+done
+}
+
+#parsed by qsub
+#run
+#atm
+#flog
+#slog
+#spec
+#frac
+#Nr
+
+#set -x
+
+module load intel-suite
+module load netcdf/4.0.1-mcmodel-medium
+
+base=/rds/general/user/rtagirov/ephemeral/runs/atlas
+
+tmp=$TMPDIR
+
+mkdir -p $tmp/INPUT
+
+cd $tmp/INPUT
+
+ln -s $base/$run/INPUT/* ./
+
+cd -
+cd $tmp
+
+ln -s $base/$run/mpsa.control ./
+ln -s $base/$run/run-mpsa.x   ./
+
+cd -
+
+declare -i Nr
+declare -i frac
+declare -i f x y g r
+
+g=$PBS_ARRAY_INDEX
+
+for ((r=1; r<=Nr; r+=1)); do
+
+    f=(g-1)*Nr+r
+
+    f=f*frac
+
+    x=f/512+1
+    y=f%512
+
+    rid="$g,$r;$x,$y"
+
+    if ((y == 0)); then x=x-1; y=512; fi
+
+    dir=$base/$run/groups/$g/$r
+
+    if [ -d $dir ]; then rm -rf $dir; fi
+
+    mkdir -p $dir
+
+    ln -s $HOME/atms/$atm/$x $tmp/INPUT/slice.inp
+
+    echo $y > $tmp/INPUT/rn.inp
+
+    /usr/bin/time -v $tmp/run-mpsa.x > $tmp/atlas.log 2>&1
+
+#    cp -P $tmp/INPUT/slice.inp  $dir
+#    cp    $tmp/INPUT/rn.inp     $dir
+#    cp    $tmp/INPUT/flux.model $dir
+    mv $tmp/INPUT/rn.inp     $dir
+    mv $tmp/INPUT/slice.inp  $dir
+    mv $tmp/INPUT/flux.model $dir
+
+    rsync -aq --no-links $tmp/ $dir/
+
+    clean $tmp
+
+    if [ ! -s $dir/atlas.log ]; then echo "$rid: no log:" >> $flog; fi
+
+    if [ -s $dir/atlas.log ]; then
+
+        ok=$(grep 'O.K.' $dir/atlas.log)
+
+        sp=$(grep 'No space left on device' $dir/atlas.log)
+
+        ma=$(grep 'malloc(): corrupted top size' $dir/atlas.log)
+
+        if [ ! "$ok" ] && [ ! "$sp" ] && [ ! "$ma" ]; then echo "$rid: reason unknown:" >> $flog; fi
+
+        if [ "$sp" ]; then echo "$rid: no space left on device:" >> $flog; fi
+
+        if [ "$ma" ]; then echo "$rid: malloc corrupted top size:" >> $flog; fi
+
+        if [ "$ok" ]; then
+
+            echo $rid: >> $slog
+
+            mv $dir/mpsa.punch $spec/$x.$y
+
+            if ((f == frac)); then mv $dir/mpsa.wave $spec; fi
+            if ((f != frac)); then rm $dir/mpsa.wave; fi
+
+        fi
+
+    fi
+
+    rm -r $dir/INPUT
+
+done
+
+module purge

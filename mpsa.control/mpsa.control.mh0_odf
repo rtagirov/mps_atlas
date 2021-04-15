@@ -1,0 +1,18 @@
+calc_odf off
+calc_flux on
+calc_model off
+
+odf_input =./INPUT/odf.input 
+odf_tp_grid =./INPUT/odf.tpgrid
+odf_output =./INPUT/ODF.nc
+
+model_input=./INPUT/model.input
+model_start=./INPUT/model.start
+model_odf=./INPUT/ODF.nc
+
+flux_input =./INPUT/flux.input
+flux_model = ./INPUT/flux.model
+flux_odf =./INPUT/mh0.bdf
+
+endfile 
+

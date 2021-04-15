@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#atlas_submit_cube G2V hydro angles 12468 mu/atms/atlas
+atlas_submit_cube G2V ssd   angles 12468 mu/atms/atlas
+atlas_submit_cube G2V 300G  angles 12468 mu/atms/atlas

@@ -1,0 +1,99 @@
+#!/bin/sh
+
+if [ $# != 6 ]; then
+ 
+   echo expecting 6 arguments: cube, snum, odf, flux_input, mpsa_control, rangl
+ 
+   exit 1
+ 
+fi
+
+cube=$1
+snum=$2
+odf=$3
+flux_input=$4
+mpsa_control=$5
+rangl=$6
+
+declare -i Na Ns Nt
+
+Na=${#rangl}
+Ns=512
+Nt=Na*Ns
+
+walltime=24:00:00
+
+base=/rds/general/user/rtagirov/ephemeral/runs/atlas
+
+run=metallicity/$cube/$snum/$rangl
+atm=$cube/$snum
+
+bin=$HOME/atlas/bin
+exe=$bin/run-mpsa.x
+atl=$HOME/atlas
+inp_flux=$atl/inp_flux
+
+ldo=$HOME/log/atlas/$run/out
+lde=$HOME/log/atlas/$run/err
+
+slog=$base/$run/success.log
+flog=$base/$run/fail.log
+spec=$base/$run/spec
+
+mkdir -p $base/$run $ldo $lde
+
+if [ -d $base/$run/INPUT ];        then rm -r $base/$run/INPUT;        fi
+if [ -f $base/$run/mpsa.control ]; then rm    $base/$run/mpsa.control; fi
+
+mkdir -p $base/$run/INPUT
+
+echo Submitting $run:
+
+echo Copying input files...
+
+pdir=$(pwd)
+
+cd $base/$run
+
+ln -s $atl/mpsa.control/$mpsa_control ./mpsa.control
+
+cd $pdir
+
+cd $base/$run/INPUT
+
+ln -s $atl/odf/${odf}.bdf         ./
+ln -s $inp_flux/molecules.dat     ./
+
+ln -s $atl/flux.input/$flux_input ./flux.input
+
+cd $pdir
+
+echo Removing old spectra...
+
+rm -rf   $spec
+mkdir -p $spec
+
+echo Removing old logs...
+
+rm -f $slog
+rm -f $flog
+rm -f $ldo/*
+rm -f $lde/*
+
+cp $exe $base/$run
+
+name=$cube/$snum/$rangl
+
+qsub -v \
+run=$run,\
+atm=$atm,\
+slog=$slog,\
+flog=$flog,\
+spec=$spec,\
+rangl=$rangl \
+-J 1-$Nt:1 \
+-o $ldo \
+-e $lde \
+-N $name \
+-lwalltime=$walltime \
+-lselect=1:ncpus=1:mem=2gb:avx2=true atlas_calc_slice_spec_m

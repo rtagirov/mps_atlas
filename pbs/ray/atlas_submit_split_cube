@@ -1,0 +1,151 @@
+#!/bin/sh
+
+if [ $# != 6 ]; then
+ 
+   echo expecting 6 arguments: stype, ctype, rfrac, rname, rangl, apath
+ 
+   exit 1
+ 
+fi
+
+stype=$1
+ctype=$2
+rfrac=$3
+rname=$4
+rangl=$5
+apath=$6
+
+declare -i Nt Ng Ns Nr
+declare -i gs ge
+declare -i s
+
+Nt=512*512
+
+#full cube, Nr rays per processor
+Ng=8192
+Ns=${N_sub:-1}
+Nr=Nt/Ng/Ns
+
+#---------------------------------------------------------
+
+#quarter of a cube, 1 ray per processor, 16 submissions
+#Ng=4096
+#Ns=16
+#Nr=1
+
+#---------------------------------------------------------
+
+#quarter of a cube, 1 ray per processor, 32 submissions
+#Ng=2048
+#Ns=32
+#Nr=1
+
+#---------------------------------------------------------
+
+#eighth of a cube, 1 ray per processor, 4 submissions
+#Ng=8192
+#Ns=4
+#Nr=1
+
+#---------------------------------------------------------
+
+#eighth of a cube, 4 ray per processor, 1 submissions
+Ng=8192
+Ns=1
+Nr=4
+
+#---------------------------------------------------------
+
+#eighth of a cube, 2 ray per processor, 2 submissions
+#Ng=8192
+#Ns=2
+#Nr=2
+
+#---------------------------------------------------------
+
+walltime=24:00:00
+
+#---------------------------------------------------------
+
+#test
+#Ns=2
+#Ng=2
+#Nr=2
+
+#walltime=00:30:00
+
+#---------------------------------------------------------
+
+base=/rds/general/user/rtagirov/ephemeral/runs/atlas
+
+run=$stype/matthias/$ctype/$rfrac/$rname/lte/$rangl
+atm=$stype/matthias/$ctype/$apath
+
+bin=$HOME/atlas/bin
+exe=$bin/run-mpsa.x
+inp=$HOME/atlas/inp_flux
+
+ldo=$HOME/log/atlas/$run/out
+lde=$HOME/log/atlas/$run/err
+
+slog=$base/$run/success.log
+flog=$base/$run/fail.log
+spec=$base/$run/spec
+
+mkdir -p $base/$run $ldo $lde
+
+if [ -d $base/$run/INPUT ];        then rm -r $base/$run/INPUT;        fi
+if [ -f $base/$run/mpsa.control ]; then rm -f $base/$run/mpsa.control; fi
+
+mkdir -p $base/$run/INPUT
+
+echo Submitting $run:
+
+echo Copying input files...
+
+cp $inp/nessy_odf.bdf $base/$run/INPUT
+cp $inp/molecules.dat $base/$run/INPUT
+cp $inp/flux.input    $base/$run/INPUT
+cp $inp/mpsa.control  $base/$run
+
+echo Removing old spectra...
+
+rm -rf   $spec
+mkdir -p $spec
+
+echo Removing old logs...
+
+rm -f $slog
+rm -f $flog
+rm -f $ldo/*
+rm -f $lde/*
+
+echo $rfrac $Ns $Nr > $base/$run/split.log
+
+cp $exe $base/$run
+
+for ((s=1; s<=Ns; s+=1)); do
+
+gs=(s-1)*Ng+1
+ge=s*Ng
+
+IFS='/' read -r -a array <<< "$run"
+
+name=a:${ctype:0:1}/$rfrac/$rname/l/$rangl:$s
+
+qsub -v \
+run=$run,\
+atm=$atm,\
+slog=$slog,\
+flog=$flog,\
+spec=$spec,\
+frac=$rfrac,\
+Nr=$Nr \
+-J $gs-$ge:1 \
+-o $ldo \
+-e $lde \
+-N $name \
+-lwalltime=$walltime \
+-lselect=1:ncpus=1:mem=2gb:avx2=true atlas_calc_ray_spec
+
+done

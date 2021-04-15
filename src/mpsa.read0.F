@@ -1303,7 +1303,7 @@
        return 
 
 8500   continue
-      print*, 'can not control file '
+      print*, 'can not find control file '
 
 9000   continue
 #ifdef MPI 

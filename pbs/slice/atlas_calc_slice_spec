@@ -1,0 +1,88 @@
+#!/bin/sh
+
+#parsed by qsub
+#run
+#atm
+#flog
+#slog
+#spec
+#rangl
+
+#set -x
+
+module load intel-suite
+module load netcdf/4.0.1-mcmodel-medium
+
+base=/rds/general/user/rtagirov/ephemeral/runs/atlas
+
+tmp=$TMPDIR
+
+mkdir -p $tmp/INPUT
+
+cd $tmp/INPUT
+
+ln -s $base/$run/INPUT/* ./
+
+cd -
+cd $tmp
+
+ln -s $base/$run/mpsa.control ./
+ln -s $base/$run/run-mpsa.x   ./
+
+cd -
+
+declare -i flat angle slice
+
+flat=$PBS_ARRAY_INDEX
+
+angle=flat/512
+slice=flat%512
+
+if ((slice == 0)); then angle=angle-1; slice=512; fi
+
+mu=${rangl:angle:1}
+
+#sid="$flat;$mu,$slice"
+sid="$mu,$slice"
+
+dir=$base/$run/groups/$mu/$slice
+
+if [ -d $dir ]; then rm -rf $dir; fi
+
+mkdir -p $dir
+
+ln -s $HOME/atms/$atm/$mu/$slice $tmp/INPUT/flux.model
+
+/usr/bin/time -v $tmp/run-mpsa.x > $tmp/atlas.log 2>&1
+
+cp -P $tmp/INPUT/flux.model $dir
+
+rm -f $tmp/mpsa.jnu
+rm -f $tmp/mpsa.print
+
+#rsync -arq --no-links $tmp/ $dir/
+#rsync -aq --no-links --no-dirs --no-recursive $tmp/ $dir/
+rsync -aq --no-links --no-dirs $tmp/ $dir/
+
+if [ ! -s $dir/atlas.log ]; then echo "$sid: no log" >> $flog; fi
+
+if [ -s $dir/atlas.log ]; then
+
+    ok=$(grep 'O.K.' $dir/atlas.log)
+
+    if [ ! $ok ]; then echo "$sid: fail" >> $flog; fi
+
+    if [ $ok ]; then
+
+        echo $sid: >> $slog
+
+        mv $dir/mpsa.punch $spec/$mu.$slice
+
+        if ((flat == 1)); then mv $dir/fort.41 $spec/mpsa.wave; fi
+        if ((flat != 1)); then rm $dir/fort.41; fi
+
+    fi
+
+fi
+
+module purge

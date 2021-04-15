@@ -1,0 +1,102 @@
+#!/bin/sh
+
+#parsed by qsub
+#run
+#atm
+#flog
+#slog
+#spec
+#rem_slices
+
+#set -x
+
+module load intel-suite
+module load netcdf/4.0.1-mcmodel-medium
+
+base=/rds/general/user/rtagirov/ephemeral/runs/atlas
+
+tmp=$TMPDIR
+
+mkdir -p $tmp/INPUT
+
+cd $tmp/INPUT
+
+ln -s $base/$run/INPUT/* ./
+
+cd -
+cd $tmp
+
+ln -s $base/$run/mpsa.control ./
+ln -s $base/$run/run-mpsa.x   ./
+
+cd -
+
+declare -i i
+
+i=$PBS_ARRAY_INDEX
+
+rem_slices_arr=($rem_slices)
+
+angle_slice=${rem_slices_arr[i-1]}
+
+IFS='.' read -r -a arr <<< "$angle_slice"
+
+mu=${arr[0]}
+
+slice=${arr[1]}
+
+sid="$mu,$slice"
+
+#---------------------------
+
+dir=$base/$run/groups/$mu/$slice
+
+if [ -d $dir ]; then rm -r $dir; fi
+
+mkdir -p $dir
+
+ln -s $HOME/cubes/metallicity/$atm/$mu/atms/atlas/$slice $tmp/INPUT/flux.model
+
+/usr/bin/time -v $tmp/run-mpsa.x > $tmp/atlas.log 2>&1
+
+cp -P $tmp/INPUT/flux.model $dir
+
+rm -f $tmp/mpsa.jnu
+rm -f $tmp/mpsa.print
+
+#rsync -arq --no-links $tmp/ $dir/
+#rsync -aq --no-links --no-dirs --no-recursive $tmp/ $dir/
+rsync -aq --no-links --no-dirs $tmp/ $dir/
+
+if [ ! -s $dir/atlas.log ]; then echo "$sid: no log" >> $flog; fi
+
+if [ -s $dir/atlas.log ]; then
+
+    ok=$(grep 'O.K.' $dir/atlas.log)
+
+    sp=$(grep 'No space left on device' $dir/atlas.log)
+
+    ma=$(grep 'malloc(): corrupted top size' $dir/atlas.log)
+
+    if [ ! "$ok" ] && [ ! "$sp" ] && [ ! "$ma" ]; then echo "$sid: reason unknown:" >> $flog; fi
+
+    if [ "$sp" ]; then echo "$sid: no space left on device:" >> $flog; fi
+
+    if [ "$ma" ]; then echo "$sid: malloc corrupted top size:" >> $flog; fi
+
+    if [ "$ok" ]; then
+
+        echo $sid: >> $slog
+
+        mv $dir/mpsa.punch $spec/$mu.$slice
+
+        if ((flat == 1)); then mv $dir/fort.41 $spec/mpsa.wave; fi
+        if ((flat != 1)); then rm $dir/fort.41; fi
+
+    fi
+
+fi
+
+rm -r $dir/INPUT
+
+module purge

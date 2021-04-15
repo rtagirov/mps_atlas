@@ -107,6 +107,7 @@
       real(kind=8), allocatable :: stau(:), st(:), sp(:) 
       real(kind=8) :: maxTch1, maxTch2
       integer :: indexT
+
       integer :: structnum
 !
 !-------------------------------  EXTERNALS ----------------------------
@@ -362,7 +363,9 @@
 !
       open (unit = 15, file = INPUTfile, form = 'formatted',
      &      status = 'old', access = 'sequential', err = 7100)
-!
+
+      call cut_ray_out_of_slice(modelfile)
+
       open (unit = 33, file = modelfile, form = 'formatted',
      &      status = 'old', access = 'sequential', err = 7200)
 
@@ -397,7 +400,7 @@
 
             print*, 'nmod = ', nmod
 
-            print*, 'structnum = ', structnum, 'nrhox = ', nrhox
+!            print*, 'structnum = ', structnum, 'nrhox = ', nrhox
 
 !     WRITE TITLE INFO TO OUTPUT FILES 
 !
@@ -466,7 +469,7 @@
 
             read(33, *) structnum, nrhox
 
-            print*, 'structnum = ', structnum, 'nrhox = ', nrhox
+!            print*, 'structnum = ', structnum, 'nrhox = ', nrhox
 
             if (nrhox .gt. maxd) then
                write( *,*) ' nrhox = ', nrhox, ', which is > maxd'
@@ -1379,6 +1382,8 @@
       call MPI_Finalize(ierr)
 #endif
       
+      print*, 'O.K.'
+
       call exit(0)  
 7000  continue
       print*,'mpsa.control is missing'
@@ -1401,11 +1406,6 @@
       print*, 'going to abort ...'
       stop
 #endif
-
-
-      
-
-
 
       end
 *
@@ -3746,4 +3746,82 @@
 
       end subroutine integmod
 
- 
+      subroutine cut_ray_out_of_slice(modelfile)
+
+      implicit none
+
+      character(30), intent(in) :: modelfile
+
+      logical :: rn_exists
+
+      integer :: j, k
+
+      integer :: rn, num, ND, nrays, one
+
+      real*8, dimension(:), allocatable :: N, T, p
+
+      real*8 :: x
+
+      one = 1
+
+      inquire(file = './INPUT/rn.inp', exist = rn_exists)
+
+      if (rn_exists) then
+
+          open(unit = 1539, file = './INPUT/rn.inp', action =  'read')
+
+          read(1539, *) rn
+
+          close(1539)
+
+          open(unit = 1540, file = './INPUT/slice.inp', action = 'read')
+
+          read(1540, *) nrays
+
+          do j = 1, nrays
+
+             read(1540, *) num, ND
+
+             if (num == rn) then
+
+                 allocate(N(ND))
+                 allocate(T(ND))
+                 allocate(p(ND))
+
+                 read(1540, *) (N(k), T(k), p(k), x, x, x, x, k = 1, ND)
+
+                 open(1541, file = trim(adjustl(modelfile)),
+     &                      action = 'write')
+
+                 write(1541, '(I1)') one
+
+                 write(1541, '(2(I4,2x))') num, ND
+
+                 do k = 1, ND
+
+                     write(1541, '(7(2x,e15.7))')
+     &                     N(k), T(k), p(k), x, x, x, x
+
+                 enddo
+
+                 close(1541)
+
+                 deallocate(N)
+                 deallocate(T)
+                 deallocate(p)
+
+                 exit
+
+             else
+
+                 read(1540, *) (x, x, x, x, x, x, x, k = 1, ND)
+
+             endif
+
+          enddo
+
+          close(1540)
+
+      endif
+
+      end subroutine

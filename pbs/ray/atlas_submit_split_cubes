@@ -1,0 +1,15 @@
+#!/bin/bash
+
+ctypes='300G ssd hydro'
+
+mus='2 4 6 8 1'
+
+for ctype in $ctypes; do
+
+    for mu in $mus; do
+
+        atlas_submit_split_cube G2V $ctype 8 angles $mu mu/atms/atlas/$mu
+
+    done
+
+done
