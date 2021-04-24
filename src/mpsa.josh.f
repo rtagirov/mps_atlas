@@ -1696,6 +1696,9 @@
       call integ(rhox, abtot, taunu, nrhox, abtot(1) * rhox(1))
       maxj = 0
 
+!      do j = 1, nrhox
+!         write(184, *) rhox(j), taunu(j), abtot(j)
+!      end do
 
 !---------------------------------------
       if(taunu(1) .gt. xtau8(nxtau)) maxj = 1

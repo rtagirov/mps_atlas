@@ -933,8 +933,10 @@
                         sigmal(j) = siglin(j) + sigxl(j)
                      end do
 *
-                     call josh
+!                     write(184, *) 'continuum at wave = ', wave
+!                     write(184, *) wave
 
+                     call josh
 
 *
                      if (ifsurf .eq. 2) then
@@ -1028,8 +1030,13 @@
                            sigmal(j) = siglin(j) + sigxl(j)
                         end do
 !
-                        call josh
 
+!                        write(184, *) 'lines at wave = ', wave
+!                        write(184, *) 'next subbin number = ', n
+!                        write(184, *) wave
+!                        write(184, *) n
+
+                        call josh
 
                         sumwt = sumwt + stepwt
                         rcowt = rco * stepwt
