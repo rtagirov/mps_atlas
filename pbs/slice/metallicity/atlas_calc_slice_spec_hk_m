@@ -78,11 +78,11 @@ if [ -s $dir/atlas.log ]; then
 
     ma=$(grep 'malloc(): corrupted top size' $dir/atlas.log)
 
-    if [ ! "$ok" ] && [ ! "$sp" ] && [ ! "$ma" ]; then echo "$sid: reason unknown:" >> $flog; fi
+    if [ ! "$ok" ] && [ ! "$sp" ] && [ ! "$ma" ]; then echo "$sid: reason unknown" >> $flog; fi
 
-    if [ "$sp" ]; then echo "$sid: no space left on device:" >> $flog; fi
+    if [ "$sp" ]; then echo "$sid: no space left on device" >> $flog; fi
 
-    if [ "$ma" ]; then echo "$sid: malloc corrupted top size:" >> $flog; fi
+    if [ "$ma" ]; then echo "$sid: malloc corrupted top size" >> $flog; fi
 
     if [ "$ok" ]; then
 
