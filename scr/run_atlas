@@ -1,0 +1,53 @@
+#!/bin/bash
+
+if [ $# != 5 ]; then echo Expecting 5 arguments: dir, flux.model, flux.input, odf, mpsa.control; exit 1; fi
+
+dir=$1
+modf=$2
+inpf=$3
+odff=$4
+ctrf=$5
+
+modd=/mnt/SSD/sim/atlas/flux.model
+inpd=/mnt/SSD/sim/atlas/flux.input
+odfd=/mnt/SSD/sim/atlas/odf
+ctrd=/mnt/SSD/sim/atlas/mpsa.control
+
+mod=$modd/$modf
+inp=$inpd/$inpf
+odf=$odfd/${odff}.bdf
+ctr=$ctrd/$ctrf
+
+if [ ! -d $dir ]; then echo Directory $dir does not exist; exit 1; fi
+
+for f in $mod $inp $odf $ctr; do
+
+    if [ ! -f $f ]; then echo File $f does not exist; exit 1; fi
+
+done
+
+cd $dir
+
+rm -f mpsa.punch
+rm -f mpsa.wave
+rm -f mpsa.print
+rm -f mpsa.jnu
+rm -f mpsa.control
+
+ln -s $ctr ./mpsa.control
+
+cd INPUT
+
+rm -f flux.model
+rm -f flux.input
+rm -f *.bdf
+
+ln -s $odf ./
+ln -s $inp ./flux.input
+ln -s $mod ./flux.model
+
+cd ..
+
+./run-mpsa.x > atlas.log &
+
+cd ..

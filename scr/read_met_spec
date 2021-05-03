@@ -1,0 +1,16 @@
+#!/bin/bash
+
+cubes='mh0_hyd/230777 mh0_hyd/233100 mh0_hyd/235427
+       mh1_hyd/004661 mh1_hyd/007049 mh1_hyd/009383
+       mh0_ssd/237495 mh0_ssd/244258 mh0_ssd/251568
+       mh1_ssd/536452 mh1_ssd/542081 mh1_ssd/547390
+       mh0_300/308000
+       mh1_300/182000'
+
+for cube in $cubes; do
+
+   IFS='/' read -r -a array <<< "$cube"
+
+   nohup python met_spec_eff_parallel.py $cube > ./log/log.${array[0]}.${array[1]} & 
+
+done
