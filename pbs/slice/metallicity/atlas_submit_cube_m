@@ -18,14 +18,18 @@ rangl=$6
 declare -i Na Ns Nt
 
 Na=${#rangl}
+
+if [[ "$rangl" = *10* ]]; then Na=Na-1; fi
+
 Ns=512
+
 Nt=Na*Ns
 
 walltime=24:00:00
 
 base=/rds/general/user/rtagirov/ephemeral/runs/atlas
 
-run=metallicity/$cube/$snum/$rangl
+run=metallicity_2/$cube/$snum/$rangl
 atm=$cube/$snum
 
 bin=$HOME/atlas/bin

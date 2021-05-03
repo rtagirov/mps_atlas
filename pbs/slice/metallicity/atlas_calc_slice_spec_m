@@ -42,7 +42,8 @@ if ((slice == 0)); then angle=angle-1; slice=512; fi
 
 mu=${rangl:angle:1}
 
-#sid="$flat;$mu,$slice"
+if [ $mu = 1 ]; then mu=10; fi
+
 sid="$mu,$slice"
 
 dir=$base/$run/groups/$mu/$slice
@@ -51,7 +52,7 @@ if [ -d $dir ]; then rm -r $dir; fi
 
 mkdir -p $dir
 
-ln -s $HOME/cubes/metallicity/$atm/$mu/atms/atlas/$slice $tmp/INPUT/flux.model
+ln -s /rds/general/user/rtagirov/ephemeral/cubes/metallicity/$atm/$mu/atms/atlas/$slice $tmp/INPUT/flux.model
 
 /usr/bin/time -v $tmp/run-mpsa.x > $tmp/atlas.log 2>&1
 

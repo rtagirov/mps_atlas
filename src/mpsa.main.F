@@ -400,7 +400,7 @@
 
             print*, 'nmod = ', nmod
 
-            print*, 'structnum = ', structnum, 'nrhox = ', nrhox
+!            print*, 'structnum = ', structnum, 'nrhox = ', nrhox
 
 !     WRITE TITLE INFO TO OUTPUT FILES 
 !
@@ -469,7 +469,7 @@
 
             read(33, *) structnum, nrhox
 
-            print*, 'structnum = ', structnum, 'nrhox = ', nrhox
+!            print*, 'structnum = ', structnum, 'nrhox = ', nrhox
 
             if (nrhox .gt. maxd) then
                write( *,*) ' nrhox = ', nrhox, ', which is > maxd'
