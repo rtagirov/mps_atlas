@@ -26,7 +26,8 @@ def read_slice(cube, snapshot, mu, slice_num, Ny, Nw):
 
     I_slice = np.zeros(Ny * Nw)
 
-    f = './' + cube + '/' + snapshot + '/1357/spec/' + str(mu) + '.' + str(slice_num)
+#    f = './' + cube + '/' + snapshot + '/1357/spec/' + str(mu) + '.' + str(slice_num)
+    f = './spec/' + cube + '/' + snapshot + '/246810/spec/' + str(mu) + '.' + str(slice_num)
 
     if os.path.exists(f): I_slice = np.genfromtxt(f)
 
@@ -41,14 +42,13 @@ def read_spec(cube, snapshot, read_mu, Nx, Ny, Nw):
     for m, mu in enumerate(read_mu):
 
         for i in tqdm(range(Nx), desc = cube + ', ' + snapshot + ', mu = ' + str(mu)):
-#        for i in range(Nx):
 
             I[i, :, :] = read_slice(cube, snapshot, mu, i + 1, Ny, Nw)
 
         for j in tqdm(range(Nw), desc = cube + ', ' + snapshot + ', mu = ' + str(mu)):
-#        for j in range(Nw):
 
-            I_averaged[mu - 1, j] = calc_mean(I[:, :, j])
+#            I_averaged[mu - 1, j] = calc_mean(I[:, :, j])
+            I_averaged[mu - 2, j] = calc_mean(I[:, :, j])
 
     return I_averaged
 
@@ -63,11 +63,13 @@ Nx = 512
 Ny = 512
 Nw = 1221
 
-read_mu = np.array([1, 3, 5, 7]).astype(int)
+#read_mu = np.array([1, 3, 5, 7]).astype(int)
+read_mu = np.array([2, 4, 6, 8, 10]).astype(int)
 
 cube_snapshot = sys.argv[1]
 
-if not os.path.exists(cube_snapshot):
+#if not os.path.exists(cube_snapshot):
+if not os.path.exists('./spec/' + cube_snapshot):
 
     print('Directory ' + cube_snapshot + ' does not exist.')
 
