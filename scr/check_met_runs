@@ -1,0 +1,25 @@
+#!/bin/bash
+
+dirs=$(ls -d mh*)
+
+for d in $dirs; do
+
+    cd $d
+
+    nums=$(ls -d *)
+
+    for n in $nums; do
+
+        cd $n/246810
+
+        echo $d/$n
+
+        $1
+
+        cd ../..
+
+    done
+
+    cd ..
+
+done

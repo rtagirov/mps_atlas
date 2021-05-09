@@ -55,7 +55,8 @@ if [ -d $dir ]; then rm -r $dir; fi
 
 mkdir -p $dir
 
-ln -s $HOME/cubes/metallicity/$atm/$mu/atms/atlas/$slice $tmp/INPUT/flux.model
+ln -s /rds/general/user/rtagirov/ephemeral/cubes/metallicity/$atm/$mu/atms/atlas/$slice $tmp/INPUT/flux.model
+#ln -s $HOME/cubes/metallicity/$atm/$mu/atms/atlas/$slice $tmp/INPUT/flux.model
 
 /usr/bin/time -v $tmp/run-mpsa.x > $tmp/atlas.log 2>&1
 

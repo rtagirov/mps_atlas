@@ -1,0 +1,29 @@
+#!/bin/bash
+
+rm -rf ./nan/*
+
+dirs=$(ls -d mh*)
+
+for d in $dirs; do
+
+    cd $d
+
+    nums=$(ls -d *)
+
+    for n in $nums; do
+
+        cd $n/246810
+
+        rm -f grep_nans
+
+        ln -s ../../../grep_nans ./
+
+        ./grep_nans $d $n &
+
+        cd ../..
+
+    done
+
+    cd ..
+
+done

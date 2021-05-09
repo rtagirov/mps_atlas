@@ -1,0 +1,21 @@
+#!/bin/bash
+
+declare -i nn np nt
+
+cd spec
+
+for f in $(ls); do
+
+if [[ $(grep + $f) ]]; then 
+
+    nn=$(grep -i nan $f | wc -l)
+
+    np=$(grep    +   $f | wc -l)
+
+    nt=nn+np
+
+    echo $f: $nt >> ../../../../nan/$1.$2
+
+fi
+
+done

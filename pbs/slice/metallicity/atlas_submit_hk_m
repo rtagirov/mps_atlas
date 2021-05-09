@@ -14,7 +14,8 @@ rangl=$3
 
 base=/rds/general/user/rtagirov/ephemeral/runs/atlas
 
-run=metallicity/$cube/$snum/$rangl
+#run=metallicity/$cube/$snum/$rangl
+run=metallicity_2/$cube/$snum/$rangl
 
 echo -n "Submitting housekeeping for $run: "
 
@@ -23,6 +24,9 @@ echo -n "Submitting housekeeping for $run: "
 declare -i Na Ns Nt Ntm1
 
 Na=${#rangl}
+
+if [[ "$rangl" = *10* ]]; then Na=Na-1; fi
+
 Ns=512
 
 rem_slices=' '
@@ -30,6 +34,8 @@ rem_slices=' '
 for ((i=0; i<$Na; i++)); do
 
     mu=${rangl:$i:1}
+
+    if [ $mu = 1 ]; then mu=10; fi
 
     for slice in $(seq 1 $Ns); do
 
