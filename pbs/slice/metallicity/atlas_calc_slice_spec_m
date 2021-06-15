@@ -33,6 +33,8 @@ cd -
 
 declare -i flat angle slice
 
+declare -i next_angle
+
 flat=$PBS_ARRAY_INDEX
 
 angle=flat/512
@@ -40,9 +42,21 @@ slice=flat%512
 
 if ((slice == 0)); then angle=angle-1; slice=512; fi
 
+next_angle=angle+1
+
 mu=${rangl:angle:1}
 
-if [ $mu = 1 ]; then mu=10; fi
+mu_next=${rangl:next_angle:1}
+
+if [ $mu = 1 ]; then
+
+    if [ $mu_next = 0 ]; then
+
+        mu=10
+
+    fi
+
+fi
 
 sid="$mu,$slice"
 

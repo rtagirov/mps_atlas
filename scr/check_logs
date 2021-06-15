@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#dirs=$(ls -d mh*)
+#dirs='300G hydro ssd'
+
+if [ $# != 1 ]; then echo Expected argument: folder; exit 1; fi
+
+folder=$1
+
+dirs=$(ls -d $folder/*)
+
+pdir=$(pwd)
+
+for d in $dirs; do
+
+    cd $d
+
+    nums=$(ls -d *)
+
+    for n in $nums; do
+
+        cd $n/1246810/err
+
+        echo Checking $d/${n}...
+        echo ----------------------------------------------------------
+
+        check_logs
+
+        echo ----------------------------------------------------------
+
+        cd ../../..
+
+    done
+
+    cd $pdir
+
+done

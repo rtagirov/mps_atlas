@@ -23,6 +23,8 @@ echo -n "Submitting housekeeping for $run: "
 
 declare -i Na Ns Nt Ntm1
 
+declare -i i j
+
 Na=${#rangl}
 
 if [[ "$rangl" = *10* ]]; then Na=Na-1; fi
@@ -33,9 +35,23 @@ rem_slices=' '
 
 for ((i=0; i<$Na; i++)); do
 
+    j=i+1
+
     mu=${rangl:$i:1}
 
-    if [ $mu = 1 ]; then mu=10; fi
+    mu_next=${rangl:$j:1}
+
+    if [ $mu = 1 ]; then
+
+        if [ $mu_next = 0 ]; then
+
+            mu=10
+
+        fi
+
+    fi
+
+#    if [ $mu = 1 ]; then mu=10; fi
 
     for slice in $(seq 1 $Ns); do
 

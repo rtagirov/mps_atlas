@@ -12,7 +12,7 @@ for d in $dirs; do
 
     for n in $nums; do
 
-        cd $n/246810
+        cd $n/1246810
 
         rm -f grep_nans
 
