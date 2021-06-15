@@ -11,6 +11,7 @@ for cube in $cubes; do
 
    IFS='/' read -r -a array <<< "$cube"
 
-   nohup python met_spec_eff_parallel.py $cube > ./log/log.${array[0]}.${array[1]} & 
+   nohup python met_spec_eff_parallel_3D.py $cube > ./log/log.${array[0]}.${array[1]} & 
+#   nohup python met_spec_eff_parallel.py $cube > ./log/log.${array[0]}.${array[1]} & 
 
 done

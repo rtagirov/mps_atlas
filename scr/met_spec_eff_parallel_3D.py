@@ -8,21 +8,6 @@ import os
 
 import sys
 
-def calc(mode, I):
-
-    nz = np.where((I[:, :] > 0.0) & (I[:, :] < 1.0) & (~np.isnan(I[:, :])))
-
-    Inz = np.zeros(len(nz[0]))
-
-    for i in range(len(nz[0])):
-
-        Inz[i] = I[nz[0][i], nz[1][i]]
-
-    if mode == 'median': Im = np.median(Inz)
-    if mode == 'mean':   Im = np.mean(Inz)
-
-    return Im
-
 def calc_mean(I):
 
     nz = np.where((I[:, :] > 0.0) & (I[:, :] < 1.0) & (~np.isnan(I[:, :])))
@@ -52,7 +37,7 @@ def read_spec(cube, snapshot, read_mu, Nx, Ny, Nw):
 
     I = np.zeros((Nx, Ny, Nw))
 
-    Im = np.zeros((9, Nw))
+    I_averaged = np.zeros((9, Nw))
 
     for m, mu in enumerate(read_mu):
 
@@ -60,13 +45,15 @@ def read_spec(cube, snapshot, read_mu, Nx, Ny, Nw):
 
             I[i, :, :] = read_slice(cube, snapshot, mu, i + 1, Ny, Nw)
 
-        for j in tqdm(range(Nw), desc = cube + ', ' + snapshot + ', mu = ' + str(mu)):
+        np.savez('./npz_3D/' + cube + '_' + snapshot + '_' + str(mu), I = I)
 
-#            Im[mu - 1, j] = calc_mean(I[:, :, j])
-#            Im[mu - 2, j] = calc('median', I[:, :, j])
-            Im[mu - 2, j] = calc('mean', I[:, :, j])
+#        for j in tqdm(range(Nw), desc = cube + ', ' + snapshot + ', mu = ' + str(mu)):
 
-    return Im
+##            I_averaged[mu - 1, j] = calc_mean(I[:, :, j])
+#            I_averaged[mu - 2, j] = calc_mean(I[:, :, j])
+
+#    return I_averaged
+    return
 
 #s0m0 = ['230777', '233100', '235427']
 #s0m1 = ['004661', '007049', '009383']
@@ -81,6 +68,8 @@ Nw = 1221
 
 #read_mu = np.array([1, 3, 5, 7]).astype(int)
 read_mu = np.array([2, 4, 6, 8, 10]).astype(int)
+#read_mu = np.array([4, 6, 8, 10]).astype(int)
+#read_mu = np.array([10]).astype(int)
 
 cube_snapshot = sys.argv[1]
 
@@ -94,7 +83,7 @@ if not os.path.exists('./spec/' + cube_snapshot):
 cube = cube_snapshot.split('/')[0]
 snapshot = cube_snapshot.split('/')[1]
 
-I = read_spec(cube, snapshot, read_mu, Nx, Ny, Nw)
+#I = read_spec(cube, snapshot, read_mu, Nx, Ny, Nw)
+read_spec(cube, snapshot, read_mu, Nx, Ny, Nw)
 
-#np.savez('./npz_1D_median/' + cube + '_' + snapshot, I = I)
-np.savez('./npz_1D_mean/' + cube + '_' + snapshot, I = I)
+#np.savez('./npz/' + cube + '_' + snapshot, I = I)

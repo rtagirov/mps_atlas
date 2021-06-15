@@ -8,6 +8,8 @@ inpf=$3
 odff=$4
 ctrf=$5
 
+inp_flux=/mnt/SSD/sim/atlas/inp_flux
+
 modd=/mnt/SSD/sim/atlas/flux.model
 inpd=/mnt/SSD/sim/atlas/flux.input
 odfd=/mnt/SSD/sim/atlas/odf
@@ -18,7 +20,9 @@ inp=$inpd/$inpf
 odf=$odfd/${odff}.bdf
 ctr=$ctrd/$ctrf
 
-if [ ! -d $dir ]; then echo Directory $dir does not exist; exit 1; fi
+#if [ ! -d $dir ]; then echo Directory $dir does not exist; exit 1; fi
+
+rm -rf $dir
 
 for f in $mod $inp $odf $ctr; do
 
@@ -26,25 +30,31 @@ for f in $mod $inp $odf $ctr; do
 
 done
 
+mkdir -p $dir/INPUT
+
 cd $dir
 
-rm -f mpsa.punch
-rm -f mpsa.wave
-rm -f mpsa.print
-rm -f mpsa.jnu
-rm -f mpsa.control
+#rm -f mpsa.punch
+#rm -f mpsa.wave
+#rm -f mpsa.print
+#rm -f mpsa.jnu
+#rm -f mpsa.control
 
 ln -s $ctr ./mpsa.control
 
+cp /mnt/SSD/sim/atlas/bin/run-mpsa.x ./
+
 cd INPUT
 
-rm -f flux.model
-rm -f flux.input
-rm -f *.bdf
+#rm -f flux.model
+#rm -f flux.input
+#rm -f *.bdf
 
 ln -s $odf ./
 ln -s $inp ./flux.input
 ln -s $mod ./flux.model
+
+ln -s $inp_flux/molecules.dat ./
 
 cd ..
 
