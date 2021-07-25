@@ -42,7 +42,8 @@ def read_slice(cube, snapshot, mu, slice_num, Ny, Nw):
     I_slice = np.zeros(Ny * Nw)
 
 #    f = './' + cube + '/' + snapshot + '/1357/spec/' + str(mu) + '.' + str(slice_num)
-    f = './spec/' + cube + '/' + snapshot + '/1246810/spec/' + str(mu) + '.' + str(slice_num)
+#    f = './spec/' + cube + '/' + snapshot + '/1246810/spec/' + str(mu) + '.' + str(slice_num)
+    f = './spec/' + cube + '/' + snapshot + '/246810/spec/' + str(mu) + '.' + str(slice_num)
 
     if os.path.exists(f): I_slice = np.genfromtxt(f)
 
