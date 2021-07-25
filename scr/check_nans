@@ -2,7 +2,10 @@
 
 rm -rf ./nan/*
 
-dirs=$(ls -d mh*)
+#dirs=$(ls -d mh*)
+#dirs='mh0-hyd mh0-ssd mh0-300 mh1-hyd mh1-ssd mh1-300'
+#dirs='mh0-300-no-ext'
+dirs='mh5-hyd mh5-ssd mh5-300'
 
 for d in $dirs; do
 
@@ -12,7 +15,8 @@ for d in $dirs; do
 
     for n in $nums; do
 
-        cd $n/1246810
+#        cd $n/1246810
+        cd $n/246810
 
         rm -f grep_nans
 

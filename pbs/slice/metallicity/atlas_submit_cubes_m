@@ -1,6 +1,22 @@
 #!/bin/bash
 
+#atlas_submit_cube_m mh5-hyd 210447 mh5 flux.input.mh5 mpsa.control.mh5_odf 246810
+#atlas_submit_cube_m mh5-hyd 230001 mh5 flux.input.mh5 mpsa.control.mh5_odf 246810
+#atlas_submit_cube_m mh5-hyd 256938 mh5 flux.input.mh5 mpsa.control.mh5_odf 246810
+
+#atlas_submit_cube_m mh5-ssd 716840 mh5 flux.input.mh5 mpsa.control.mh5_odf 246810
+#atlas_submit_cube_m mh5-ssd 751264 mh5 flux.input.mh5 mpsa.control.mh5_odf 246810
+#atlas_submit_cube_m mh5-ssd 791247 mh5 flux.input.mh5 mpsa.control.mh5_odf 246810
+
+#atlas_submit_cube_m mh5-300 635000 mh5 flux.input.mh5 mpsa.control.mh5_odf 246810
+#atlas_submit_cube_m mh5-300 637500 mh5 flux.input.mh5 mpsa.control.mh5_odf 246810
+#atlas_submit_cube_m mh5-300 640000 mh5 flux.input.mh5 mpsa.control.mh5_odf 246810
+
 #atlas_submit_cube_m mh0-300 308000 mh0 flux.input.mh0 mpsa.control.mh0_odf 1246810
+
+#----------------------------------------------------------------------------------------
+#atlas_submit_cube_m mh0-300-no-ext 308000 mh0 flux.input.mh0 mpsa.control.mh0_odf 246810
+#----------------------------------------------------------------------------------------
 
 #atlas_submit_cube_m mh0-hyd 230777 mh0 flux.input.mh0 mpsa.control.mh0_odf 1246810
 #atlas_submit_cube_m mh0-hyd 233100 mh0 flux.input.mh0 mpsa.control.mh0_odf 1246810
@@ -20,24 +36,40 @@
 #atlas_submit_cube_m mh1-ssd 542081 mh1 flux.input.mh1 mpsa.control.mh1_odf 1246810
 #atlas_submit_cube_m mh1-ssd 547390 mh1 flux.input.mh1 mpsa.control.mh1_odf 1246810
 
-#------------------------------------------------------------------------------
+#========================================================================================
 
-atlas_submit_hk_m mh0-300 308000 1246810
+atlas_submit_hk_m mh5-hyd 210447 246810
+atlas_submit_hk_m mh5-hyd 230001 246810
+atlas_submit_hk_m mh5-hyd 256938 246810
 
-atlas_submit_hk_m mh0-hyd 230777 1246810
-atlas_submit_hk_m mh0-hyd 233100 1246810
-atlas_submit_hk_m mh0-hyd 235427 1246810
+atlas_submit_hk_m mh5-ssd 716840 246810
+atlas_submit_hk_m mh5-ssd 751264 246810
+atlas_submit_hk_m mh5-ssd 791247 246810
 
-atlas_submit_hk_m mh0-ssd 237495 1246810
-atlas_submit_hk_m mh0-ssd 244258 1246810
-atlas_submit_hk_m mh0-ssd 251568 1246810
+atlas_submit_hk_m mh5-300 635000 246810
+atlas_submit_hk_m mh5-300 637500 246810
+atlas_submit_hk_m mh5-300 640000 246810
 
-atlas_submit_hk_m mh1-300 182000 1246810
+#atlas_submit_hk_m mh0-300 308000 1246810
 
-atlas_submit_hk_m mh1-hyd 004661 1246810
-atlas_submit_hk_m mh1-hyd 007049 1246810
-atlas_submit_hk_m mh1-hyd 009383 1246810
+#----------------------------------------------------------------------------------------
+#atlas_submit_hk_m mh0-300-no-ext 308000 246810
+#----------------------------------------------------------------------------------------
 
-atlas_submit_hk_m mh1-ssd 536452 1246810
-atlas_submit_hk_m mh1-ssd 542081 1246810
-atlas_submit_hk_m mh1-ssd 547390 1246810
+#atlas_submit_hk_m mh0-hyd 230777 1246810
+#atlas_submit_hk_m mh0-hyd 233100 1246810
+#atlas_submit_hk_m mh0-hyd 235427 1246810
+
+#atlas_submit_hk_m mh0-ssd 237495 1246810
+#atlas_submit_hk_m mh0-ssd 244258 1246810
+#atlas_submit_hk_m mh0-ssd 251568 1246810
+
+#atlas_submit_hk_m mh1-300 182000 1246810
+
+#atlas_submit_hk_m mh1-hyd 004661 1246810
+#atlas_submit_hk_m mh1-hyd 007049 1246810
+#atlas_submit_hk_m mh1-hyd 009383 1246810
+
+#atlas_submit_hk_m mh1-ssd 536452 1246810
+#atlas_submit_hk_m mh1-ssd 542081 1246810
+#atlas_submit_hk_m mh1-ssd 547390 1246810
