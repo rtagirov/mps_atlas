@@ -27,7 +27,9 @@ Nt=Na*Ns
 
 walltime=24:00:00
 
-base=/rds/general/user/rtagirov/ephemeral/runs/atlas
+rds=/rds/general/user/rtagirov/ephemeral
+
+base=$rds/runs/atlas
 
 run=metallicity_2/$cube/$snum/$rangl
 atm=$cube/$snum
@@ -37,8 +39,8 @@ exe=$bin/run-mpsa.x
 atl=$HOME/atlas
 inp_flux=$atl/inp_flux
 
-ldo=$HOME/log/atlas/$run/out
-lde=$HOME/log/atlas/$run/err
+ldo=$rds/logs/atlas/$run/out
+lde=$rds/logs/atlas/$run/err
 
 slog=$base/$run/success.log
 flog=$base/$run/fail.log

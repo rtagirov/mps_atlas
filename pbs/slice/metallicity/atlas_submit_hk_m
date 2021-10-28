@@ -12,7 +12,9 @@ cube=$1
 snum=$2
 rangl=$3
 
-base=/rds/general/user/rtagirov/ephemeral/runs/atlas
+rds=/rds/general/user/rtagirov/ephemeral
+
+base=$rds/runs/atlas
 
 #run=metallicity/$cube/$snum/$rangl
 run=metallicity_2/$cube/$snum/$rangl
@@ -86,8 +88,8 @@ done
 
 atm=$cube/$snum
 
-ldo=$HOME/log/atlas/$run/hk/out
-lde=$HOME/log/atlas/$run/hk/err
+ldo=$rds/logs/atlas/$run/hk/out
+lde=$rds/logs/atlas/$run/hk/err
 
 slog=$base/$run/success.hk.log
 flog=$base/$run/fail.hk.log
