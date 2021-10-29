@@ -1,13 +1,15 @@
 #!/bin/sh
 
-#parsed by qsub
-#run
-#atm
-#flog
-#slog
-#spec
-#rangl
+# parsed by qsub (-v option)
+# run
+# atm
+# flog
+# slog
+# spec
+# rangl
 
+# when this line is uncommented the result of every command
+# is logged in standard error files ($lde in atlas_submit_cube_m)
 #set -x
 
 module load intel-suite
@@ -15,6 +17,10 @@ module load netcdf/4.0.1-mcmodel-medium
 
 base=/rds/general/user/rtagirov/ephemeral/runs/atlas
 
+# for each individual job a temporary directory is created
+# with its name stored in the $TMPDIR variable
+# in this directory the calculations are performed
+# after the calculations are done the directory is removed
 tmp=$TMPDIR
 
 mkdir -p $tmp/INPUT

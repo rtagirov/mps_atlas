@@ -8,42 +8,71 @@ if [ $# != 6 ]; then
  
 fi
 
-cube=$1
-snum=$2
-odf=$3
-flux_input=$4
-mpsa_control=$5
-rangl=$6
+cube=$1         # name of the cube
+snum=$2         # snapshot number
+odf=$3          # name of odf
+flux_input=$4   # name of flux.input file
+mpsa_control=$5 # name of mpsa.control file
+rangl=$6        # string of angles to be run
 
+# Na - number of angles
+# Ns - number of slices
+# Nt - number of individual jobs in the resulting job-array
 declare -i Na Ns Nt
 
 Na=${#rangl}
 
+# Na above calculates the number of characters in the string with angles
+# mu = 10 (which stands for mu = 1.0) gives to characters but one angle
+# hence we have to put the following condition here
 if [[ "$rangl" = *10* ]]; then Na=Na-1; fi
 
+# this is the standard number of slices in each cube
 Ns=512
 
+# see above
 Nt=Na*Ns
 
-walltime=24:00:00
+# time needed to calculate spectrum of each slice
+# the actual execution time is much shorter 
+# but just in case let it be 30 min
+# if you make it shorter it won't make any difference in regards to queueing
+walltime=00:30:00
 
+# path to Research and Data Storage
+# this is where the results of all runs are stored
 rds=/rds/general/user/rtagirov/ephemeral
 
+# prefix of many paths below 
 base=$rds/runs/atlas
 
+# path to the run within the $base (see above)
 run=metallicity_2/$cube/$snum/$rangl
+
+# part of the path to the slices (sets of 1D atmospheres) of the given cube
+# see $atm in atlas_calc_slice_spec_m 
 atm=$cube/$snum
 
 bin=$HOME/atlas/bin
 exe=$bin/run-mpsa.x
+
+# directory with the atlas code
 atl=$HOME/atlas
+
+# directory with input.flux files
 inp_flux=$atl/inp_flux
 
+# directories with log files for every individual job
+# standard output and error
 ldo=$rds/logs/atlas/$run/out
 lde=$rds/logs/atlas/$run/err
 
+# the slice either succeeds or fails
+# each success/fail is logged into the corresponding file
 slog=$base/$run/success.log
 flog=$base/$run/fail.log
+
+# directory containing the spectra of all slices
 spec=$base/$run/spec
 
 mkdir -p $base/$run $ldo $lde
@@ -90,6 +119,17 @@ cp $exe $base/$run
 
 name=$cube/$snum/$rangl
 
+# -v option passes the variables listed after it
+# onto the script that is being submitted
+# -J is the job-array option
+# it creates $Nt submissions of the script
+# in each submission the $PBS_ARRAY_INDEX
+# variable in atlas_calc_slice_spec_m will
+# take value from 1 to $Nt with step 1
+# -o and -e options are the paths
+# to standard output and error log directories set above
+# -N option is the name of the run to be displayed
+# when qstat command is given
 qsub -v \
 run=$run,\
 atm=$atm,\
