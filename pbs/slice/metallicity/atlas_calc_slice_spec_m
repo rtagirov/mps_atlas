@@ -10,6 +10,7 @@
 
 # when this line is uncommented the result of every command
 # is logged in standard error files ($lde in atlas_submit_cube_m)
+# very useful for debugging
 #set -x
 
 module load intel-suite
@@ -37,17 +38,36 @@ ln -s $base/$run/run-mpsa.x   ./
 
 cd -
 
+# declaring the following variables as integers
 declare -i flat angle slice
-
 declare -i next_angle
 
+# flat index of the slice i.e. it is the index of 
+# the slice in the range from 1 to number_of_angles*number_of_slices
+# number_of_angles is given as an argument for atlas_submit_cube_m script
+# number_of_slices is 512 (always the same for the cubes in question)
 flat=$PBS_ARRAY_INDEX
 
+# given the flat index we determine the corresponding angle
+# and the slice number within that angle
+# angle will be equal to the integer division of flat by 512
+# (which is the number_of_slices for the cubes in question)
+# while slice will be equal to the remainder of this division
 angle=flat/512
 slice=flat%512
 
+# without this condition the
+# last slice within each angle
+# gives wrong angle number 
+# and slice number
 if ((slice == 0)); then angle=angle-1; slice=512; fi
 
+# need to determine next_angle
+# in order to differentiate
+# between mu = 0.1 and mu = 1.0
+# which have corresponding
+# designations of 1 and 10
+# within the script
 next_angle=angle+1
 
 mu=${rangl:angle:1}
@@ -64,29 +84,42 @@ if [ $mu = 1 ]; then
 
 fi
 
-sid="$mu,$slice"
+# slice identifier
+sid="${mu}.${slice}"
 
+# directory where the output for
+# a given slice is stored
 dir=$base/$run/groups/$mu/$slice
 
 if [ -d $dir ]; then rm -r $dir; fi
 
 mkdir -p $dir
 
+# link the file containing the slice to the computation directory
 ln -s /rds/general/user/rtagirov/ephemeral/cubes/metallicity/$atm/$mu/atms/atlas/$slice $tmp/INPUT/flux.model
 
+# run atlas
 /usr/bin/time -v $tmp/run-mpsa.x > $tmp/atlas.log 2>&1
 
+# after the run is done copy
+# the link to directory with the results
 cp -P $tmp/INPUT/flux.model $dir
 
 rm -f $tmp/mpsa.jnu
 rm -f $tmp/mpsa.print
 
-#rsync -arq --no-links $tmp/ $dir/
-#rsync -aq --no-links --no-dirs --no-recursive $tmp/ $dir/
+# copy the remaining contents
+# of the computation directory
+# to the directory with results
 rsync -aq --no-links --no-dirs $tmp/ $dir/
 
+# if there is no log file of the run for some reason
+# leave the corresponding message in the fail log file
 if [ ! -s $dir/atlas.log ]; then echo "$sid: no log" >> $flog; fi
 
+# if there is log file then 
+# it is analysed for possible
+# outcomes of the calculation
 if [ -s $dir/atlas.log ]; then
 
     ok=$(grep 'O.K.' $dir/atlas.log)
@@ -95,18 +128,27 @@ if [ -s $dir/atlas.log ]; then
 
     ma=$(grep 'malloc(): corrupted top size' $dir/atlas.log)
 
+#   if none of the above indicators have been found in the log file
+#   then the run has failed and the reason is unknown
     if [ ! "$ok" ] && [ ! "$sp" ] && [ ! "$ma" ]; then echo "$sid: reason unknown" >> $flog; fi
 
     if [ "$sp" ]; then echo "$sid: no space left on device" >> $flog; fi
 
     if [ "$ma" ]; then echo "$sid: malloc corrupted top size" >> $flog; fi
 
+#   if everything is ok then:
     if [ "$ok" ]; then
 
+#       leave the corresponding message in the log file
         echo $sid: >> $slog
 
+#       move the spectrum from the result directory
+#       to the directory with the spectra
         mv $dir/mpsa.punch $spec/$mu.$slice
 
+#       if the first slice has been calculated then
+#       move fort.41 (which is the file with the list of wavelengths)
+#       to the directory with the spectra otherwise remove fort.41
         if ((flat == 1)); then mv $dir/fort.41 $spec/mpsa.wave; fi
         if ((flat != 1)); then rm $dir/fort.41; fi
 
