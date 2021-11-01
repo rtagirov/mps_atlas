@@ -59,7 +59,7 @@ exe=$bin/run-mpsa.x
 # directory with the atlas code
 atl=$HOME/atlas
 
-# directory with input.flux files
+# directory with input files for flux calculations
 inp_flux=$atl/inp_flux
 
 # directories with log files for every individual job
